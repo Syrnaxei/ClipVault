@@ -47,7 +47,18 @@ function ClipboardItem({ item, duplicate, onDelete, onEdit, onCopy }: ClipboardI
         </div>
       ) : (
         <div className="view-mode">
-          <span className="content-text">{item.content}</span>
+          <div className="item-body">
+            <span className="content-text">{item.content}</span>
+            <span className="item-time">
+              {new Date(item.created_at).toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
+          </div>
           <div className="action-buttons">
             <button onClick={handleEdit} className="action-button edit" title="编辑">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

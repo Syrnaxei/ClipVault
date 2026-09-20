@@ -1,49 +1,92 @@
 .sidebar {
-  width: 280px;
-  background-color: #1a1a1a;
-  border-right: 1px solid #333;
+  width: 300px;
+  flex-shrink: 0;
+  background-color: var(--bg);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  transition: width 0.2s ease;
+}
+
+.sidebar.collapsed {
+  width: 0;
+  border-right-width: 0;
+}
+
+.sidebar-inner {
+  width: 300px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 15px;
+  padding: 16px;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--text-3);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--text-3);
+}
+
+.connection-status.online .status-dot {
+  background-color: var(--accent);
+}
+
+.connection-status.offline .status-dot {
+  background-color: var(--border-strong);
 }
 
 .search-box {
   display: flex;
   align-items: center;
-  background-color: #2a2a2a;
-  border: 1px solid #333;
-  border-radius: 10px;
-  padding: 10px 15px;
-  margin-bottom: 15px;
-  transition: border-color 0.2s ease;
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-btn);
+  padding: 9px 14px;
+  margin-bottom: 16px;
+  transition: border-color 0.15s ease;
 }
 
 .search-box:focus-within {
-  border-color: #f5c518;
+  border-color: var(--focus);
 }
 
 .search-icon {
-  color: #888;
+  color: var(--text-3);
   margin-right: 10px;
+  flex-shrink: 0;
 }
 
 .search-input {
   flex: 1;
   background: none;
   border: none;
-  color: #ffffff;
-  font-size: 14px;
+  color: var(--text);
+  font-size: 15px;
   outline: none;
 }
 
 .search-input::placeholder {
-  color: #666;
+  color: var(--text-3);
 }
 
 .clipboard-list {
   flex: 1;
   overflow-y: auto;
-  padding-right: 5px;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .clipboard-list::-webkit-scrollbar {
@@ -51,50 +94,46 @@
 }
 
 .clipboard-list::-webkit-scrollbar-track {
-  background: #2a2a2a;
-  border-radius: 3px;
+  background: transparent;
 }
 
 .clipboard-list::-webkit-scrollbar-thumb {
-  background: #555;
+  background: var(--surface-3);
   border-radius: 3px;
 }
 
 .clipboard-list::-webkit-scrollbar-thumb:hover {
-  background: #666;
+  background: var(--border-strong);
 }
 
-.clipboard-item {
+.clipboard-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px;
-  margin-bottom: 10px;
-  background-color: #2a2a2a;
-  border: 1px solid #333;
-  border-radius: 10px;
+  padding: 12px 14px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
-.clipboard-item:hover {
-  background-color: #333;
-  border-color: #444;
-  transform: translateX(5px);
+.clipboard-card:hover {
+  border-color: var(--border-strong);
 }
 
-.clipboard-item.active {
-  background-color: #f5c518;
-  border-color: #f5c518;
+.clipboard-card.active {
+  background-color: var(--accent);
+  border-color: var(--accent);
 }
 
-.clipboard-item.active .clipboard-name {
-  color: #1a1a1a;
+.clipboard-card.active .clipboard-name {
+  color: var(--on-accent);
   font-weight: 600;
 }
 
-.clipboard-item.active .clipboard-meta {
-  color: #333;
+.clipboard-card.active .clipboard-meta {
+  color: rgba(250, 249, 245, 0.75);
 }
 
 .clipboard-info {
@@ -104,10 +143,13 @@
 
 .clipboard-name {
   font-size: 15px;
-  color: #ffffff;
   font-weight: 500;
+  color: var(--text);
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .clipboard-meta {
@@ -115,86 +157,133 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #888;
-}
-
-.clipboard-time {
-  color: #f5c518;
-  font-weight: 500;
-}
-
-.clipboard-preview {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 120px;
+  color: var(--text-3);
 }
 
 .delete-button {
   background: none;
   border: none;
   cursor: pointer;
-  color: #666;
-  padding: 5px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  color: var(--text-3);
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
   opacity: 0;
   transform: scale(0.8);
 }
 
-.clipboard-item:hover .delete-button {
+.clipboard-card:hover .delete-button,
+.clipboard-card.active .delete-button {
   opacity: 1;
   transform: scale(1);
 }
 
 .delete-button:hover {
-  color: #ff4757;
-  background-color: rgba(255, 71, 87, 0.1);
+  color: var(--on-accent);
+  background-color: var(--error);
+}
+
+.add-clipboard-section {
+  margin-top: 12px;
 }
 
 .add-button {
   width: 100%;
-  height: 50px;
-  border: 2px dashed #444;
+  height: 44px;
+  border: 1px dashed var(--border-strong);
   background-color: transparent;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   cursor: pointer;
-  font-size: 28px;
-  color: #666;
-  transition: all 0.2s ease;
-  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
 }
 
 .add-button:hover {
-  border-color: #f5c518;
-  color: #f5c518;
-  background-color: rgba(245, 197, 24, 0.1);
-  transform: scale(1.02);
+  border-color: var(--accent);
+  color: var(--accent);
+  background-color: var(--accent-soft);
 }
 
-.connection-status {
+.add-clipboard-form {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
-  padding: 4px 6px;
+}
+
+.add-clipboard-input {
+  padding: 10px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-btn);
+  background-color: var(--surface);
+  color: var(--text);
+  font-size: 15px;
+}
+
+.add-clipboard-input:focus {
+  outline: none;
+  border-color: var(--focus);
+}
+
+.add-clipboard-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.confirm-add-clipboard {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--accent);
+  color: var(--on-accent);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.confirm-add-clipboard:hover {
+  background-color: var(--accent-hover);
+}
+
+.confirm-add-clipboard:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancel-add-clipboard {
+  flex: 1;
+  padding: 9px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cancel-add-clipboard:hover {
+  background-color: var(--surface-2);
+}
+
+.add-clipboard-error {
   font-size: 12px;
-  color: #888;
+  color: var(--error);
 }
 
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #555;
-}
-
-.connection-status.online .status-dot {
-  background-color: #2ed573;
-}
-
-.connection-status.offline .status-dot {
-  background-color: #ff4757;
+.sidebar-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-3);
+  font-size: 14px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-card);
 }

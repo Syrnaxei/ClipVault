@@ -3,9 +3,16 @@ import './App.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import ClipboardList from './components/ClipboardList';
+import Settings from './components/Settings';
 import { api, ApiKeyError, clearApiKey, getApiKey, hasApiKey, setApiKey } from './api';
 import { connectWs } from './ws';
 import type { Clipboard, ClipboardItem, DuplicateGroup, WsEvent } from './types';
+
+type Theme = 'light' | 'dark';
+
+function initialTheme(): Theme {
+  return localStorage.getItem('clipvault_theme') === 'dark' ? 'dark' : 'light';
+}
 
 function KeyGate({ onAuthed }: { onAuthed: () => void }) {
   const [key, setKey] = useState('');
@@ -45,6 +52,9 @@ function KeyGate({ onAuthed }: { onAuthed: () => void }) {
 
 function App() {
   const [authed, setAuthed] = useState(hasApiKey());
+  const [theme, setTheme] = useState<Theme>(initialTheme);
+  const [view, setView] = useState<'main' | 'settings'>('main');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [clipboards, setClipboards] = useState<Clipboard[]>([]);
   const [itemsByClipboard, setItemsByClipboard] = useState<Record<number, ClipboardItem[]>>({});
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -52,6 +62,11 @@ function App() {
   const [connected, setConnected] = useState(false);
   const activeIdRef = useRef<number | null>(null);
   activeIdRef.current = activeId;
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('clipvault_theme', theme);
+  }, [theme]);
 
   const refreshAll = useCallback(async () => {
     const { clipboards: list } = await api.listClipboards();
@@ -179,8 +194,7 @@ function App() {
     }
   }, [activeId, itemsByClipboard]);
 
-  const handleAddClipboard = async () => {
-    const name = `剪切板${Date.now() % 10000}`;
+  const handleAddClipboard = async (name: string) => {
     await api.createClipboard(name);
   };
 
@@ -223,30 +237,50 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
-      <div className="main-container">
-        <Sidebar
-          clipboards={clipboards}
-          activeId={activeId}
+      <Header
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen((v) => !v)}
+        settingsOpen={view === 'settings'}
+        onToggleSettings={() => setView((v) => (v === 'settings' ? 'main' : 'settings'))}
+      />
+      {view === 'settings' ? (
+        <Settings
+          theme={theme}
+          onThemeChange={setTheme}
           connected={connected}
-          onSelectClipboard={setActiveId}
-          onAddClipboard={handleAddClipboard}
-          onDeleteClipboard={handleDeleteClipboard}
-        />
-        <ClipboardList
-          items={activeItems ?? []}
-          loading={activeId !== null && activeItems === undefined}
-          dupGroups={dupGroups}
-          onAddItem={handleAddItem}
-          onDeleteItem={async (id) => {
-            await api.deleteItem(id);
+          onBack={() => setView('main')}
+          onLogout={() => {
+            clearApiKey();
+            setAuthed(false);
+            setView('main');
           }}
-          onEditItem={handleEditItem}
-          onCopyItem={handleCopyItem}
-          onCheckDuplicates={handleCheckDuplicates}
-          onClearDuplicates={() => setDupGroups(null)}
         />
-      </div>
+      ) : (
+        <div className="main-container">
+          <Sidebar
+            clipboards={clipboards}
+            activeId={activeId}
+            connected={connected}
+            collapsed={!sidebarOpen}
+            onSelectClipboard={setActiveId}
+            onAddClipboard={handleAddClipboard}
+            onDeleteClipboard={handleDeleteClipboard}
+          />
+          <ClipboardList
+            items={activeItems ?? []}
+            loading={activeId !== null && activeItems === undefined}
+            dupGroups={dupGroups}
+            onAddItem={handleAddItem}
+            onDeleteItem={async (id) => {
+              await api.deleteItem(id);
+            }}
+            onEditItem={handleEditItem}
+            onCopyItem={handleCopyItem}
+            onCheckDuplicates={handleCheckDuplicates}
+            onClearDuplicates={() => setDupGroups(null)}
+          />
+        </div>
+      )}
     </div>
   );
 }

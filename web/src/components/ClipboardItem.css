@@ -1,16 +1,14 @@
 .clipboard-item-content {
-  background-color: #2a2a2a;
-  border: 1px solid #333;
-  border-radius: 10px;
-  padding: 18px;
-  transition: all 0.2s ease;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 14px 18px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .clipboard-item-content:hover {
-  background-color: #333;
-  border-color: #444;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: var(--border-strong);
+  box-shadow: var(--whisper);
 }
 
 .view-mode {
@@ -19,19 +17,33 @@
   justify-content: space-between;
 }
 
-.content-text {
+.item-body {
   flex: 1;
-  font-size: 15px;
-  color: #ffffff;
+  min-width: 0;
   margin-right: 15px;
-  line-height: 1.5;
+}
+
+.content-text {
+  display: block;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.item-time {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: 0.12px;
+  color: var(--text-3);
 }
 
 .action-buttons {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.15s ease;
 }
 
 .clipboard-item-content:hover .action-buttons {
@@ -40,31 +52,37 @@
 
 .action-button {
   background: none;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   padding: 8px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  color: #888;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  color: var(--text-2);
 }
 
 .action-button:hover {
-  transform: scale(1.15);
-}
-
-.action-button.edit:hover {
-  background-color: rgba(245, 197, 24, 0.2);
-  color: #f5c518;
+  background-color: var(--surface-2);
+  color: var(--text);
 }
 
 .action-button.delete:hover {
-  background-color: rgba(255, 71, 87, 0.2);
-  color: #ff4757;
+  background-color: var(--error);
+  color: var(--on-accent);
 }
 
 .action-button.copy:hover {
-  background-color: rgba(46, 213, 115, 0.2);
-  color: #2ed573;
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.clipboard-item-content.duplicate {
+  border: 1px dashed var(--accent);
+  background-color: var(--accent-soft);
+}
+
+.clipboard-item-content.duplicate:hover {
+  box-shadow: var(--whisper);
+  border-color: var(--accent);
 }
 
 .edit-mode {
@@ -74,20 +92,20 @@
 }
 
 .edit-input {
-  padding: 12px 15px;
-  border: 2px solid #444;
-  border-radius: 8px;
+  padding: 11px 15px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-btn);
   font-size: 15px;
   width: 100%;
   box-sizing: border-box;
-  background-color: #1a1a1a;
-  color: #ffffff;
-  transition: border-color 0.2s ease;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: border-color 0.15s ease;
 }
 
 .edit-input:focus {
   outline: none;
-  border-color: #f5c518;
+  border-color: var(--focus);
 }
 
 .edit-actions {
@@ -98,40 +116,30 @@
 
 .save-button,
 .cancel-button {
-  padding: 8px 16px;
+  padding: 8px 18px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .save-button {
-  background-color: #f5c518;
-  color: #1a1a1a;
+  background-color: var(--accent);
+  color: var(--on-accent);
 }
 
 .save-button:hover {
-  background-color: #ffd700;
-  transform: translateY(-1px);
+  background-color: var(--accent-hover);
 }
 
 .cancel-button {
-  background-color: #333;
-  color: #ffffff;
+  background-color: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-2);
 }
 
 .cancel-button:hover {
-  background-color: #444;
-}
-
-.clipboard-item-content.duplicate {
-  border-color: rgba(255, 71, 87, 0.6);
-  background-color: rgba(255, 71, 87, 0.08);
-}
-
-.clipboard-item-content.duplicate:hover {
-  border-color: #ff4757;
-  background-color: rgba(255, 71, 87, 0.14);
+  background-color: var(--surface-2);
 }

@@ -1,68 +1,28 @@
 .clipboard-list-container {
   flex: 1;
-  padding: 20px;
-  background-color: #1a1a1a;
+  padding: 24px 28px;
+  background-color: var(--bg);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .clipboard-list-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 25px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #333;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
 }
 
 .clipboard-list-header h2 {
   margin: 0;
-  font-size: 22px;
-  color: #ffffff;
+  font-size: 26px;
+  color: var(--text);
   font-weight: 600;
-}
-
-.add-item-button {
-  width: 35px;
-  height: 35px;
-  border: 2px dashed #555;
-  background-color: transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 20px;
-  color: #888;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.add-item-button:hover {
-  border-color: #f5c518;
-  color: #f5c518;
-  background-color: rgba(245, 197, 24, 0.1);
-}
-
-.clipboard-items {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #666;
-  background-color: #222;
-  border-radius: 12px;
-  border: 1px dashed #444;
-}
-
-.empty-state p {
-  margin: 0;
-  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .header-actions {
@@ -72,77 +32,152 @@
 }
 
 .check-duplicates-button {
-  padding: 8px 14px;
-  border: 1px solid #555;
-  background-color: transparent;
+  padding: 8px 16px;
+  border: 1px solid var(--border-strong);
+  background-color: var(--surface);
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
-  color: #aaa;
-  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  transition: all 0.15s ease;
 }
 
 .check-duplicates-button:hover {
-  border-color: #f5c518;
-  color: #f5c518;
+  background-color: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+.add-item-button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-strong);
+  background-color: var(--accent);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--on-accent);
+  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-item-button:hover {
+  background-color: var(--accent-hover);
+}
+
+.add-item-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.add-item-input {
+  flex: 1;
+  padding: 11px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-btn);
+  font-size: 15px;
+  background-color: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s ease;
+}
+
+.add-item-input:focus {
+  outline: none;
+  border-color: var(--focus);
+}
+
+.confirm-add-button {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--accent);
+  color: var(--on-accent);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.confirm-add-button:hover {
+  background-color: var(--accent-hover);
 }
 
 .duplicates-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
-  margin-bottom: 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  background-color: #222;
-  border: 1px solid #333;
-  color: #888;
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background-color: var(--surface);
+  font-size: 14px;
+  color: var(--text-2);
 }
 
 .duplicates-banner.has-duplicates {
-  background-color: rgba(255, 71, 87, 0.1);
-  border-color: rgba(255, 71, 87, 0.4);
-  color: #ff6b78;
+  border: 1px solid var(--accent);
+  background-color: var(--accent-soft);
+  color: var(--text);
+  font-weight: 500;
 }
 
 .clear-duplicates-button {
   background: none;
   border: none;
-  color: inherit;
   cursor: pointer;
   font-size: 13px;
-  text-decoration: underline;
+  font-weight: 500;
+  color: var(--text-3);
+  padding: 4px 10px;
+  border-radius: 8px;
+  transition: all 0.15s ease;
 }
 
-.add-item-row {
+.clear-duplicates-button:hover {
+  color: var(--text);
+  background-color: var(--surface-2);
+}
+
+.clipboard-items {
   display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.add-item-input {
+  flex-direction: column;
+  gap: 12px;
   flex: 1;
-  padding: 12px 15px;
-  border: 2px solid #444;
-  border-radius: 8px;
-  background-color: #222;
-  color: #fff;
-  font-size: 14px;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
-.add-item-input:focus {
-  outline: none;
-  border-color: #f5c518;
+.clipboard-items::-webkit-scrollbar {
+  width: 6px;
 }
 
-.confirm-add-button {
-  padding: 0 20px;
-  border: none;
-  border-radius: 8px;
-  background-color: #f5c518;
-  color: #1a1a1a;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
+.clipboard-items::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.clipboard-items::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 3px;
+}
+
+.clipboard-items::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-3);
+  background-color: var(--surface);
+  border-radius: 16px;
+  border: 1px dashed var(--border-strong);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 15px;
 }
