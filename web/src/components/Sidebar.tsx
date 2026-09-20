@@ -5,7 +5,6 @@ import './Sidebar.css';
 interface SidebarProps {
   clipboards: Clipboard[];
   activeId: number | null;
-  connected: boolean;
   collapsed: boolean;
   onSelectClipboard: (id: number) => void;
   onAddClipboard: (name: string) => Promise<void>;
@@ -15,7 +14,6 @@ interface SidebarProps {
 function Sidebar({
   clipboards,
   activeId,
-  connected,
   collapsed,
   onSelectClipboard,
   onAddClipboard,
@@ -69,11 +67,6 @@ function Sidebar({
   return (
     <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-inner">
-        <div className={`connection-status ${connected ? 'online' : 'offline'}`}>
-          <span className="status-dot" />
-          {connected ? '已连接' : '连接中...'}
-        </div>
-
         <div className="search-box">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-icon">
             <circle cx="11" cy="11" r="8"></circle>

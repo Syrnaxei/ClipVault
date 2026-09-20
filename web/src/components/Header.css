@@ -1,4 +1,5 @@
 .header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -11,6 +12,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.header-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
 }
 
 .header-right {

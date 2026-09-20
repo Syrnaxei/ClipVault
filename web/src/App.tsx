@@ -260,13 +260,13 @@ function App() {
           <Sidebar
             clipboards={clipboards}
             activeId={activeId}
-            connected={connected}
             collapsed={!sidebarOpen}
             onSelectClipboard={setActiveId}
             onAddClipboard={handleAddClipboard}
             onDeleteClipboard={handleDeleteClipboard}
           />
           <ClipboardList
+            clipboardName={clipboards.find((c) => c.id === activeId)?.name ?? null}
             items={activeItems ?? []}
             loading={activeId !== null && activeItems === undefined}
             dupGroups={dupGroups}

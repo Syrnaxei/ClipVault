@@ -195,7 +195,7 @@ function App() {
                     clearApiKey();
                     setAuthed(false);
                     setView('main');
-                } })) : (_jsxs("div", { className: "main-container", children: [_jsx(Sidebar, { clipboards: clipboards, activeId: activeId, connected: connected, collapsed: !sidebarOpen, onSelectClipboard: setActiveId, onAddClipboard: handleAddClipboard, onDeleteClipboard: handleDeleteClipboard }), _jsx(ClipboardList, { items: activeItems ?? [], loading: activeId !== null && activeItems === undefined, dupGroups: dupGroups, onAddItem: handleAddItem, onDeleteItem: async (id) => {
+                } })) : (_jsxs("div", { className: "main-container", children: [_jsx(Sidebar, { clipboards: clipboards, activeId: activeId, collapsed: !sidebarOpen, onSelectClipboard: setActiveId, onAddClipboard: handleAddClipboard, onDeleteClipboard: handleDeleteClipboard }), _jsx(ClipboardList, { clipboardName: clipboards.find((c) => c.id === activeId)?.name ?? null, items: activeItems ?? [], loading: activeId !== null && activeItems === undefined, dupGroups: dupGroups, onAddItem: handleAddItem, onDeleteItem: async (id) => {
                             await api.deleteItem(id);
                         }, onEditItem: handleEditItem, onCopyItem: handleCopyItem, onCheckDuplicates: handleCheckDuplicates, onClearDuplicates: () => setDupGroups(null) })] }))] }));
 }

@@ -4,6 +4,7 @@ import ClipboardItemView from './ClipboardItem';
 import './ClipboardList.css';
 
 interface ClipboardListProps {
+  clipboardName: string | null;
   items: ClipboardItem[];
   loading: boolean;
   dupGroups: DuplicateGroup[] | null;
@@ -16,6 +17,7 @@ interface ClipboardListProps {
 }
 
 function ClipboardList({
+  clipboardName,
   items,
   loading,
   dupGroups,
@@ -44,7 +46,7 @@ function ClipboardList({
   return (
     <div className="clipboard-list-container">
       <div className="clipboard-list-header">
-        <h2>剪切板内容</h2>
+        <h2>{clipboardName ?? '未选择剪切板'}</h2>
         <div className="header-actions">
           <button className="check-duplicates-button" onClick={onCheckDuplicates}>
             检查重复
