@@ -1,0 +1,137 @@
+.clipboard-item-content {
+  background-color: #2a2a2a;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 18px;
+  transition: all 0.2s ease;
+}
+
+.clipboard-item-content:hover {
+  background-color: #333;
+  border-color: #444;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.view-mode {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.content-text {
+  flex: 1;
+  font-size: 15px;
+  color: #ffffff;
+  margin-right: 15px;
+  line-height: 1.5;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.clipboard-item-content:hover .action-buttons {
+  opacity: 1;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  color: #888;
+}
+
+.action-button:hover {
+  transform: scale(1.15);
+}
+
+.action-button.edit:hover {
+  background-color: rgba(245, 197, 24, 0.2);
+  color: #f5c518;
+}
+
+.action-button.delete:hover {
+  background-color: rgba(255, 71, 87, 0.2);
+  color: #ff4757;
+}
+
+.action-button.copy:hover {
+  background-color: rgba(46, 213, 115, 0.2);
+  color: #2ed573;
+}
+
+.edit-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit-input {
+  padding: 12px 15px;
+  border: 2px solid #444;
+  border-radius: 8px;
+  font-size: 15px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  transition: border-color 0.2s ease;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #f5c518;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.save-button,
+.cancel-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.save-button {
+  background-color: #f5c518;
+  color: #1a1a1a;
+}
+
+.save-button:hover {
+  background-color: #ffd700;
+  transform: translateY(-1px);
+}
+
+.cancel-button {
+  background-color: #333;
+  color: #ffffff;
+}
+
+.cancel-button:hover {
+  background-color: #444;
+}
+
+.clipboard-item-content.duplicate {
+  border-color: rgba(255, 71, 87, 0.6);
+  background-color: rgba(255, 71, 87, 0.08);
+}
+
+.clipboard-item-content.duplicate:hover {
+  border-color: #ff4757;
+  background-color: rgba(255, 71, 87, 0.14);
+}

@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+build/
+
+# runtime data
+server/data/
+*.db
+*.db-wal
+*.db-shm
+
+# env & secrets
+.env
+.env.local
+
+# logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# local tool settings
+.claude/
+
+# preview prototype (superseded by web/, contains its own nested .git)
+Preview/

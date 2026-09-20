@@ -1,0 +1,89 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.header-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 5px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  color: #f5c518;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.title {
+  font-size: 20px;
+  margin: 0;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.header-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: #f5c518;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-button:hover {
+  background-color: rgba(245, 197, 24, 0.1);
+  transform: scale(1.1);
+}
+
+.text-icon {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.separator {
+  width: 1px;
+  height: 20px;
+  background-color: #444;
+  margin: 0 8px;
+}
+
+.edit-button {
+  background-color: rgba(245, 197, 24, 0.15);
+  border-radius: 6px;
+}
+
+.edit-button:hover {
+  background-color: rgba(245, 197, 24, 0.25);
+}

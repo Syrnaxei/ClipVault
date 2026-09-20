@@ -1,0 +1,200 @@
+.sidebar {
+  width: 280px;
+  background-color: #1a1a1a;
+  border-right: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: #2a2a2a;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  transition: border-color 0.2s ease;
+}
+
+.search-box:focus-within {
+  border-color: #f5c518;
+}
+
+.search-icon {
+  color: #888;
+  margin-right: 10px;
+}
+
+.search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+.clipboard-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.clipboard-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.clipboard-list::-webkit-scrollbar-track {
+  background: #2a2a2a;
+  border-radius: 3px;
+}
+
+.clipboard-list::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+.clipboard-list::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+.clipboard-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: #2a2a2a;
+  border: 1px solid #333;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clipboard-item:hover {
+  background-color: #333;
+  border-color: #444;
+  transform: translateX(5px);
+}
+
+.clipboard-item.active {
+  background-color: #f5c518;
+  border-color: #f5c518;
+}
+
+.clipboard-item.active .clipboard-name {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.clipboard-item.active .clipboard-meta {
+  color: #333;
+}
+
+.clipboard-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.clipboard-name {
+  font-size: 15px;
+  color: #ffffff;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.clipboard-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #888;
+}
+
+.clipboard-time {
+  color: #f5c518;
+  font-weight: 500;
+}
+
+.clipboard-preview {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 5px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.clipboard-item:hover .delete-button {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.delete-button:hover {
+  color: #ff4757;
+  background-color: rgba(255, 71, 87, 0.1);
+}
+
+.add-button {
+  width: 100%;
+  height: 50px;
+  border: 2px dashed #444;
+  background-color: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 28px;
+  color: #666;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-button:hover {
+  border-color: #f5c518;
+  color: #f5c518;
+  background-color: rgba(245, 197, 24, 0.1);
+  transform: scale(1.02);
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  font-size: 12px;
+  color: #888;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #555;
+}
+
+.connection-status.online .status-dot {
+  background-color: #2ed573;
+}
+
+.connection-status.offline .status-dot {
+  background-color: #ff4757;
+}
