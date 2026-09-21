@@ -1,0 +1,139 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(20, 20, 19, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: modal-fade-in 0.15s ease;
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-card {
+  width: 420px;
+  max-width: calc(100vw - 48px);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--whisper);
+  padding: 28px;
+  animation: modal-card-in 0.18s ease;
+}
+
+@keyframes modal-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-title {
+  margin: 0 0 20px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  margin-bottom: 6px;
+}
+
+.modal-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-btn);
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  transition: border-color 0.15s ease;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--focus);
+}
+
+.modal-input-mono {
+  font-family: ui-monospace, Menlo, Consolas, 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.modal-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.modal-error {
+  color: var(--error);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.modal-cancel,
+.modal-confirm {
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-cancel {
+  background-color: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-2);
+}
+
+.modal-cancel:hover {
+  background-color: var(--surface-2);
+}
+
+.modal-confirm {
+  background-color: var(--accent);
+  border: none;
+  color: var(--on-accent);
+}
+
+.modal-confirm:hover {
+  background-color: var(--accent-hover);
+}
+
+.modal-cancel:disabled,
+.modal-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

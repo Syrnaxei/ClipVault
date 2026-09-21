@@ -119,11 +119,18 @@
   font-size: 15px;
   font-weight: 500;
   color: var(--text);
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.clipboard-pin {
+  flex-shrink: 0;
+  color: var(--accent);
 }
 
 .clipboard-meta {

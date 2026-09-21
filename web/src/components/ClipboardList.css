@@ -28,28 +28,83 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
 }
 
-.delete-clipboard-button {
+.menu-toggle {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 16px;
-  border: 1px solid var(--border-strong);
-  background-color: var(--surface);
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  background: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
   color: var(--text-2);
   transition: all 0.15s ease;
 }
 
-.delete-clipboard-button:hover {
-  border-color: var(--error);
-  color: var(--error);
+.menu-toggle:hover,
+.header-actions.open .menu-toggle {
+  background-color: var(--surface-2);
+  color: var(--text);
+}
+
+.menu-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0;
+  color: var(--text-2);
+  transition: width 0.22s ease, margin-left 0.22s ease, opacity 0.15s ease,
+    background-color 0.15s ease, color 0.15s ease;
+}
+
+.menu-action svg {
+  flex-shrink: 0;
+}
+
+.header-actions.open .menu-action {
+  width: 32px;
+  margin-left: 8px;
+  opacity: 1;
+}
+
+.header-actions.open > :nth-child(2) {
+  transition-delay: 0.04s, 0.04s, 0.04s, 0s, 0s;
+}
+
+.header-actions.open > :nth-child(3) {
+  transition-delay: 0.08s, 0.08s, 0.08s, 0s, 0s;
+}
+
+.header-actions.open > :nth-child(4) {
+  transition-delay: 0.12s, 0.12s, 0.12s, 0s, 0s;
+}
+
+.menu-action:hover {
+  background-color: var(--surface-2);
+  color: var(--text);
+}
+
+.menu-action.pin:hover,
+.menu-action.pin.active {
   background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.menu-action.delete:hover {
+  background-color: var(--error);
+  color: var(--on-accent);
 }
 
 .check-duplicates-button {

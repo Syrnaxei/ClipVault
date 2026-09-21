@@ -85,6 +85,8 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE clipboards (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   name        TEXT    NOT NULL,
+  uuid        TEXT    NOT NULL UNIQUE,   -- 剪切板对外标识，供外部脚本/快捷指令经 API 引用
+  pinned      INTEGER NOT NULL DEFAULT 0, -- 手动置顶标记：1 置顶，0 普通
   created_at  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
 
@@ -103,6 +105,8 @@ CREATE INDEX idx_items_hash ON clipboard_items(clipboard_id, content_hash);
 
 设计要点：
 
+- **剪切板 UUID**：创建时由服务端生成（UUIDv4），全局唯一且可通过 Web 端"编辑剪切板"弹窗修改。外部脚本/快捷指令可先经 `GET /api/clipboards/by-uuid/:uuid` 解析出数字 `id` 再调用条目接口，避免 UI 与 API 之间数字 id 不一致的问题。
+- **置顶**：`pinned` 由用户在 Web 端手动切换（非自动置顶）；剪切板列表按 `pinned DESC, created_at ASC` 排序，置顶的剪切板固定显示在侧边栏顶部。
 - **文本存储**：`content` 用 SQLite `TEXT` 类型，UTF-8 编码，对内容长度不做应用层假设（SQLite 单值上限 1GB，远超需求）。
 - **内容哈希**：条目写入与编辑时均计算 SHA-256 并存储，供"检查重复"端点高效比对（同哈希即视为内容完全相同）；不做任何自动去重/置顶行为。
 - **重复检查**：`GET /api/clipboards/:id/duplicates` 按 `content_hash` 分组，返回条目数 > 1 的组，供前端"检查重复"按钮调用。
@@ -127,10 +131,11 @@ CREATE INDEX idx_items_hash ON clipboard_items(clipboard_id, content_hash);
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | `/api/clipboards` | 列出所有剪切板（含各自条目数与最新条目时间，供侧边栏展示） |
-| POST | `/api/clipboards` | 新建剪切板，body: `{ "name": "string" }` |
+| GET | `/api/clipboards` | 列出所有剪切板（含 `uuid`、`pinned`、条目数与最新条目时间，按置顶优先排序，供侧边栏展示） |
+| POST | `/api/clipboards` | 新建剪切板，body: `{ "name": "string" }`；服务端自动生成 `uuid` |
+| GET | `/api/clipboards/by-uuid/:uuid` | 按 UUID 查询单个剪切板（供外部脚本解析数字 `id` 用） |
 | DELETE | `/api/clipboards/:id` | 删除剪切板及其全部条目（级联） |
-| PATCH | `/api/clipboards/:id` | 重命名剪切板，body: `{ "name": "string" }` |
+| PATCH | `/api/clipboards/:id` | 更新剪切板，body 至少包含一项：`{ "name"?: "string", "uuid"?: "string(uuid)", "pinned"?: boolean }`；`uuid` 冲突返回 409 |
 
 **条目**
 
@@ -148,7 +153,7 @@ CREATE INDEX idx_items_hash ON clipboard_items(clipboard_id, content_hash);
 { "error": { "code": "VALIDATION_ERROR", "message": "content is required" } }
 ```
 
-错误码：`VALIDATION_ERROR`(400)、`UNAUTHORIZED`(401)、`NOT_FOUND`(404)。
+错误码：`VALIDATION_ERROR`(400)、`UNAUTHORIZED`(401)、`NOT_FOUND`(404)、`CONFLICT`(409，剪切板 UUID 重复)。
 
 **独立插入 API 的说明**：`POST /api/clipboards/:id/items` 即为区别于前端的独立入口，供桌面端脚本与 iOS 快捷指令直接调用，不支持批量；条目不记录来源设备。
 
@@ -160,7 +165,7 @@ CREATE INDEX idx_items_hash ON clipboard_items(clipboard_id, content_hash);
 
 | type | 触发时机 | payload |
 |------|----------|---------|
-| `clipboard.created` / `clipboard.renamed` / `clipboard.deleted` | 剪切板变更 | 剪切板对象 / `{ id }` |
+| `clipboard.created` / `clipboard.updated` / `clipboard.deleted` | 剪切板新建 / 更新（重命名、改 UUID、置顶切换）/ 删除 | 剪切板对象 / `{ id }` |
 | `item.created` | 条目新增 | 完整条目对象 |
 | `item.updated` | 条目内容被编辑 | 完整条目对象（含新内容与哈希） |
 | `item.deleted` | 条目删除 | `{ id, clipboardId }` |

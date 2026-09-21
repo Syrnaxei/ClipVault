@@ -1,6 +1,8 @@
 export interface Clipboard {
   id: number;
   name: string;
+  uuid: string;
+  pinned: boolean;
   created_at: string;
   item_count?: number;
   latest_item_at?: string | null;
@@ -21,7 +23,7 @@ export interface DuplicateGroup {
 
 export type WsEvent =
   | { type: 'clipboard.created'; payload: Clipboard }
-  | { type: 'clipboard.renamed'; payload: Clipboard }
+  | { type: 'clipboard.updated'; payload: Clipboard }
   | { type: 'clipboard.deleted'; payload: { id: number } }
   | { type: 'item.created'; payload: ClipboardItem }
   | { type: 'item.updated'; payload: ClipboardItem }

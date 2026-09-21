@@ -23,9 +23,11 @@ function Sidebar({
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const filtered = clipboards.filter((clipboard) =>
-    clipboard.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const filtered = clipboards
+    .filter((clipboard) =>
+      clipboard.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    )
+    .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   const openForm = () => {
     setAdding(true);
@@ -92,7 +94,15 @@ function Sidebar({
               onClick={() => onSelectClipboard(clipboard.id)}
             >
               <div className="clipboard-info">
-                <span className="clipboard-name">{clipboard.name}</span>
+                <span className="clipboard-name">
+                  {clipboard.pinned && (
+                    <svg className="clipboard-pin" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-label="已置顶">
+                      <path d="M12 17v5"></path>
+                      <path d="M9 10.76V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3.76a2 2 0 0 0 .59 1.42l1.82 1.82a1 1 0 0 1-.71 1.71H7.3a1 1 0 0 1-.71-1.71l1.82-1.82a2 2 0 0 0 .59-1.42z"></path>
+                    </svg>
+                  )}
+                  {clipboard.name}
+                </span>
                 <div className="clipboard-meta">
                   <span className="clipboard-time">
                     {clipboard.latest_item_at

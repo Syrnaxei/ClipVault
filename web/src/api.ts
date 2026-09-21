@@ -55,6 +55,16 @@ export const api = {
     }),
   deleteClipboard: (id: number) =>
     request<void>(`/api/clipboards/${id}`, { method: 'DELETE' }),
+  updateClipboard: (id: number, data: { name?: string; uuid?: string }) =>
+    request<{ clipboard: Clipboard }>(`/api/clipboards/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  setClipboardPinned: (id: number, pinned: boolean) =>
+    request<{ clipboard: Clipboard }>(`/api/clipboards/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ pinned }),
+    }),
   listItems: (clipboardId: number) =>
     request<{ items: ClipboardItem[] }>(`/api/clipboards/${clipboardId}/items`),
   createItem: (clipboardId: number, content: string) =>

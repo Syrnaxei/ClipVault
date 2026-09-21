@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import type { ClipboardItem, DuplicateGroup } from '../types';
+import { useEffect, useRef, useState } from 'react';
+import type { Clipboard, ClipboardItem, DuplicateGroup } from '../types';
 import ClipboardItemView from './ClipboardItem';
+import ClipboardEditModal from './ClipboardEditModal';
 import PopConfirm from './PopConfirm';
 import './ClipboardList.css';
 
 interface ClipboardListProps {
-  clipboardId: number | null;
-  clipboardName: string | null;
+  clipboard: Clipboard | null;
   items: ClipboardItem[];
   loading: boolean;
   dupGroups: DuplicateGroup[] | null;
@@ -17,11 +17,12 @@ interface ClipboardListProps {
   onCheckDuplicates: () => void;
   onClearDuplicates: () => void;
   onDeleteClipboard: (id: number) => void;
+  onUpdateClipboard: (id: number, data: { name: string; uuid: string }) => Promise<void>;
+  onTogglePinned: (id: number, pinned: boolean) => Promise<void>;
 }
 
 function ClipboardList({
-  clipboardId,
-  clipboardName,
+  clipboard,
   items,
   loading,
   dupGroups,
@@ -32,13 +33,40 @@ function ClipboardList({
   onCheckDuplicates,
   onClearDuplicates,
   onDeleteClipboard,
+  onUpdateClipboard,
+  onTogglePinned,
 }: ClipboardListProps) {
   const [expanded, setExpanded] = useState(false);
   const [newContent, setNewContent] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const actionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDocMouseDown = (e: MouseEvent) => {
+      if (actionsRef.current?.contains(e.target as Node)) return;
+      setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onDocMouseDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocMouseDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    setMenuOpen(false);
+    setEditModalOpen(false);
+  }, [clipboard?.id]);
 
   const submitNewItem = () => {
     const content = newContent.trim();
-    if (!content || clipboardId === null) return;
+    if (!content || clipboard === null) return;
     onAddItem(content);
     setNewContent('');
     setExpanded(false);
@@ -51,20 +79,58 @@ function ClipboardList({
   return (
     <div className="clipboard-list-container">
       <div className="clipboard-list-header">
-        <h2>{clipboardName ?? '未选择剪切板'}</h2>
-        {clipboardId !== null && (
-          <PopConfirm
-            title={`确定删除剪切板「${clipboardName}」吗？其中的所有条目都会被删除。`}
-            onConfirm={() => onDeleteClipboard(clipboardId)}
-          >
-            <button className="delete-clipboard-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        <h2>{clipboard?.name ?? '未选择剪切板'}</h2>
+        {clipboard !== null && (
+          <div className={`header-actions ${menuOpen ? 'open' : ''}`} ref={actionsRef}>
+            <button
+              className="menu-toggle"
+              onClick={() => setMenuOpen((v) => !v)}
+              title={menuOpen ? '收起' : '更多操作'}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="5" cy="12" r="1.8"></circle>
+                <circle cx="12" cy="12" r="1.8"></circle>
+                <circle cx="19" cy="12" r="1.8"></circle>
               </svg>
-              删除剪切板
             </button>
-          </PopConfirm>
+            <button
+              className={`menu-action pin ${clipboard.pinned ? 'active' : ''}`}
+              onClick={() => {
+                onTogglePinned(clipboard.id, !clipboard.pinned);
+                setMenuOpen(false);
+              }}
+              title={clipboard.pinned ? '取消置顶' : '置顶'}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 17v5"></path>
+                <path d="M9 10.76V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3.76a2 2 0 0 0 .59 1.42l1.82 1.82a1 1 0 0 1-.71 1.71H7.3a1 1 0 0 1-.71-1.71l1.82-1.82a2 2 0 0 0 .59-1.42z"></path>
+              </svg>
+            </button>
+            <button
+              className="menu-action edit"
+              onClick={() => {
+                setEditModalOpen(true);
+                setMenuOpen(false);
+              }}
+              title="编辑"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <PopConfirm
+              title={`确定删除剪切板「${clipboard.name}」吗？其中的所有条目都会被删除。`}
+              onConfirm={() => onDeleteClipboard(clipboard.id)}
+            >
+              <button className="menu-action delete" title="删除">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
+            </PopConfirm>
+          </div>
         )}
       </div>
 
@@ -103,15 +169,18 @@ function ClipboardList({
         <div className="add-item-box">
           <textarea
             className={`add-item-input ${expanded ? 'expanded' : ''}`}
-            placeholder={clipboardId !== null ? '输入要添加的内容，Enter 添加，Shift+Enter 换行' : '请先选择剪切板'}
+            placeholder={clipboard !== null ? '输入要添加的内容，Enter 添加，Shift+Enter 换行' : '请先选择剪切板'}
             rows={1}
             value={newContent}
-            disabled={clipboardId === null}
+            disabled={clipboard === null}
             onChange={(e) => setNewContent(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 submitNewItem();
+              }
+              if (e.key === 'Enter' && e.shiftKey) {
+                setExpanded(true);
               }
               if (e.key === 'Escape') {
                 setNewContent('');
@@ -133,11 +202,22 @@ function ClipboardList({
         <button
           className="check-duplicates-button"
           onClick={onCheckDuplicates}
-          disabled={clipboardId === null}
+          disabled={clipboard === null}
         >
           检查重复
         </button>
       </div>
+
+      {editModalOpen && clipboard !== null && (
+        <ClipboardEditModal
+          clipboard={clipboard}
+          onCancel={() => setEditModalOpen(false)}
+          onSave={async (data) => {
+            await onUpdateClipboard(clipboard.id, data);
+            setEditModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

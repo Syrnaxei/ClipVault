@@ -117,7 +117,7 @@ function App() {
               prev.some((c) => c.id === event.payload.id) ? prev : [...prev, event.payload],
             );
             break;
-          case 'clipboard.renamed':
+          case 'clipboard.updated':
             setClipboards((prev) =>
               prev.map((c) => (c.id === event.payload.id ? { ...c, ...event.payload } : c)),
             );
@@ -203,6 +203,14 @@ function App() {
     if (activeId === id) setActiveId(null);
   };
 
+  const handleUpdateClipboard = async (id: number, data: { name: string; uuid: string }) => {
+    await api.updateClipboard(id, data);
+  };
+
+  const handleTogglePinned = async (id: number, pinned: boolean) => {
+    await api.setClipboardPinned(id, pinned);
+  };
+
   const handleAddItem = async (content: string) => {
     if (activeId === null) return;
     await api.createItem(activeId, content);
@@ -265,8 +273,7 @@ function App() {
             onAddClipboard={handleAddClipboard}
           />
           <ClipboardList
-            clipboardId={activeId}
-            clipboardName={clipboards.find((c) => c.id === activeId)?.name ?? null}
+            clipboard={clipboards.find((c) => c.id === activeId) ?? null}
             items={activeItems ?? []}
             loading={activeId !== null && activeItems === undefined}
             dupGroups={dupGroups}
@@ -279,6 +286,8 @@ function App() {
             onCheckDuplicates={handleCheckDuplicates}
             onClearDuplicates={() => setDupGroups(null)}
             onDeleteClipboard={handleDeleteClipboard}
+            onUpdateClipboard={handleUpdateClipboard}
+            onTogglePinned={handleTogglePinned}
           />
         </div>
       )}
