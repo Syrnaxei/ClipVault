@@ -31,11 +31,34 @@
   gap: 10px;
 }
 
-.check-duplicates-button {
+.delete-clipboard-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   padding: 8px 16px;
   border: 1px solid var(--border-strong);
   background-color: var(--surface);
   border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: all 0.15s ease;
+}
+
+.delete-clipboard-button:hover {
+  border-color: var(--error);
+  color: var(--error);
+  background-color: var(--accent-soft);
+}
+
+.check-duplicates-button {
+  align-self: flex-end;
+  height: 46px;
+  padding: 0 18px;
+  border: 1px solid var(--border-strong);
+  background-color: var(--surface);
+  border-radius: var(--radius-btn);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -48,40 +71,49 @@
   border-color: var(--border-strong);
 }
 
-.add-item-button {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--border-strong);
-  background-color: var(--accent);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 20px;
-  color: var(--on-accent);
-  transition: background-color 0.15s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.check-duplicates-button:disabled,
+.add-item-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.add-item-button:hover {
-  background-color: var(--accent-hover);
-}
-
-.add-item-row {
+.list-footer {
   display: flex;
   gap: 10px;
-  margin-bottom: 16px;
+  align-items: flex-end;
+  margin-top: 14px;
+}
+
+.list-footer .add-item-box {
+  flex: 1;
+}
+
+.add-item-box {
+  position: relative;
 }
 
 .add-item-input {
-  flex: 1;
-  padding: 11px 16px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  height: 46px;
+  padding: 11px 44px 11px 16px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-btn);
   font-size: 15px;
+  font-family: inherit;
+  line-height: 1.5;
   background-color: var(--surface);
   color: var(--text);
-  transition: border-color 0.15s ease;
+  overflow: hidden;
+  resize: none;
+  transition: height 0.25s ease, border-color 0.15s ease;
+}
+
+.add-item-input.expanded {
+  height: 176px;
+  overflow-y: auto;
+  padding-right: 16px;
 }
 
 .add-item-input:focus {
@@ -89,20 +121,38 @@
   border-color: var(--focus);
 }
 
-.confirm-add-button {
-  padding: 10px 22px;
+.add-item-expand {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 26px;
+  height: 26px;
   border: none;
   border-radius: 8px;
-  background-color: var(--accent);
-  color: var(--on-accent);
-  font-size: 14px;
-  font-weight: 500;
+  background-color: var(--surface-2);
+  color: var(--text-2);
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.confirm-add-button:hover {
-  background-color: var(--accent-hover);
+.add-item-input.expanded + .add-item-expand {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.add-item-expand:hover {
+  color: var(--text);
+}
+
+.add-item-expand svg {
+  transition: transform 0.25s ease;
+}
+
+.add-item-expand.expanded svg {
+  transform: rotate(180deg);
 }
 
 .duplicates-banner {

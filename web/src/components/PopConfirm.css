@@ -1,0 +1,76 @@
+.popconfirm {
+  display: inline-flex;
+}
+
+.popconfirm-trigger {
+  display: inline-flex;
+}
+
+.popconfirm-popover {
+  position: fixed;
+  z-index: 1000;
+  min-width: 190px;
+  padding: 14px;
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-btn);
+  box-shadow: 0px 0px 0px 1px var(--border), var(--whisper);
+  animation: popconfirm-in 0.16s ease;
+}
+
+@keyframes popconfirm-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popconfirm-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.popconfirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.popconfirm-cancel {
+  padding: 6px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background-color: var(--surface-2);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.popconfirm-cancel:hover {
+  color: var(--text);
+}
+
+.popconfirm-confirm {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--error);
+  color: var(--on-accent);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.popconfirm-confirm:hover {
+  filter: brightness(1.08);
+}

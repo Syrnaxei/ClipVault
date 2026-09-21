@@ -263,9 +263,9 @@ function App() {
             collapsed={!sidebarOpen}
             onSelectClipboard={setActiveId}
             onAddClipboard={handleAddClipboard}
-            onDeleteClipboard={handleDeleteClipboard}
           />
           <ClipboardList
+            clipboardId={activeId}
             clipboardName={clipboards.find((c) => c.id === activeId)?.name ?? null}
             items={activeItems ?? []}
             loading={activeId !== null && activeItems === undefined}
@@ -278,6 +278,7 @@ function App() {
             onCopyItem={handleCopyItem}
             onCheckDuplicates={handleCheckDuplicates}
             onClearDuplicates={() => setDupGroups(null)}
+            onDeleteClipboard={handleDeleteClipboard}
           />
         </div>
       )}

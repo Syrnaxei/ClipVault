@@ -134,29 +134,6 @@
   color: var(--text-3);
 }
 
-.delete-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-3);
-  padding: 6px;
-  border-radius: 6px;
-  transition: all 0.15s ease;
-  opacity: 0;
-  transform: scale(0.8);
-}
-
-.clipboard-card:hover .delete-button,
-.clipboard-card.active .delete-button {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.delete-button:hover {
-  color: var(--on-accent);
-  background-color: var(--error);
-}
-
 .add-clipboard-section {
   margin-top: 12px;
 }
