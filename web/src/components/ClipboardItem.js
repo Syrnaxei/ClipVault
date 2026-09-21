@@ -17,7 +17,14 @@ function ClipboardItem({ item, duplicate, onDelete, onEdit, onCopy }) {
         setIsEditing(false);
         setEditContent(item.content);
     };
-    return (_jsx("div", { className: `clipboard-item-content ${duplicate ? 'duplicate' : ''}`, children: isEditing ? (_jsxs("div", { className: "edit-mode", children: [_jsx("input", { type: "text", value: editContent, onChange: (e) => setEditContent(e.target.value), className: "edit-input", autoFocus: true }), _jsxs("div", { className: "edit-actions", children: [_jsx("button", { onClick: handleSave, className: "save-button", children: "\u4FDD\u5B58" }), _jsx("button", { onClick: handleCancel, className: "cancel-button", children: "\u53D6\u6D88" })] })] })) : (_jsxs("div", { className: "view-mode", children: [_jsxs("div", { className: "item-body", children: [_jsx("span", { className: "content-text", children: item.content }), _jsx("span", { className: "item-time", children: new Date(item.created_at).toLocaleString('zh-CN', {
+    return (_jsx("div", { className: `clipboard-item-content ${duplicate ? 'duplicate' : ''}`, children: isEditing ? (_jsxs("div", { className: "edit-mode", children: [_jsx("textarea", { value: editContent, onChange: (e) => setEditContent(e.target.value), onKeyDown: (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSave();
+                        }
+                        if (e.key === 'Escape')
+                            handleCancel();
+                    }, className: "edit-input", rows: 3, autoFocus: true }), _jsxs("div", { className: "edit-actions", children: [_jsx("button", { onClick: handleSave, className: "save-button", children: "\u4FDD\u5B58" }), _jsx("button", { onClick: handleCancel, className: "cancel-button", children: "\u53D6\u6D88" })] })] })) : (_jsxs("div", { className: "view-mode", children: [_jsxs("div", { className: "item-body", children: [_jsx("span", { className: "content-text", children: item.content }), _jsx("span", { className: "item-time", children: new Date(item.created_at).toLocaleString('zh-CN', {
                                 year: 'numeric',
                                 month: '2-digit',
                                 day: '2-digit',

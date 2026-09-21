@@ -34,11 +34,18 @@ function ClipboardItem({ item, duplicate, onDelete, onEdit, onCopy }: ClipboardI
     <div className={`clipboard-item-content ${duplicate ? 'duplicate' : ''}`}>
       {isEditing ? (
         <div className="edit-mode">
-          <input
-            type="text"
+          <textarea
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSave();
+              }
+              if (e.key === 'Escape') handleCancel();
+            }}
             className="edit-input"
+            rows={3}
             autoFocus
           />
           <div className="edit-actions">
