@@ -17,6 +17,7 @@ function ClipboardEditModal({ clipboard, onCancel, onSave }: ClipboardEditModalP
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [uuidFocused, setUuidFocused] = useState(false);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -111,16 +112,20 @@ function ClipboardEditModal({ clipboard, onCancel, onSave }: ClipboardEditModalP
               <label className="modal-label" htmlFor="clipboard-uuid-input">剪切板 UUID</label>
               <input
                 id="clipboard-uuid-input"
-                className="modal-input modal-input-mono"
+                className={`modal-input modal-input-mono ${uuidFocused ? 'modal-input-danger' : ''}`}
                 value={uuid}
                 onChange={(e) => {
                   setUuid(e.target.value);
                   setError('');
                 }}
+                onFocus={() => setUuidFocused(true)}
+                onBlur={() => setUuidFocused(false)}
                 onKeyDown={(e) => e.key === 'Enter' && submit()}
                 spellCheck={false}
               />
-              <p className="modal-hint">供外部 API 调用时标识此剪切板</p>
+              {uuidFocused && (
+                <p className="modal-hint modal-hint-warning">! 修改后旧 UUID 的脚本与快捷指令将失效</p>
+              )}
             </div>
             {error && <div className="modal-error">{error}</div>}
             <div className="modal-actions">
@@ -139,9 +144,13 @@ function ClipboardEditModal({ clipboard, onCancel, onSave }: ClipboardEditModalP
               <div className="modal-value">{clipboard.name}</div>
             </div>
             <div className="modal-field">
+              <span className="modal-label">创建时间</span>
+              <div className="modal-value">{createdAt}</div>
+            </div>
+            <div className="modal-field">
               <span className="modal-label">剪切板 UUID</span>
               <div className="uuid-row">
-                <div className="modal-value modal-value-mono">{clipboard.uuid}</div>
+                <span className="modal-value modal-value-mono">{clipboard.uuid}</span>
                 <button
                   className={`copy-button ${copied ? 'copied' : ''}`}
                   onClick={copyUuid}
@@ -160,10 +169,6 @@ function ClipboardEditModal({ clipboard, onCancel, onSave }: ClipboardEditModalP
                 </button>
               </div>
               <p className="modal-hint">供外部 API 调用时标识此剪切板</p>
-            </div>
-            <div className="modal-field">
-              <span className="modal-label">创建时间</span>
-              <div className="modal-value">{createdAt}</div>
             </div>
             <div className="modal-actions">
               <button className="modal-cancel" onClick={onCancel}>

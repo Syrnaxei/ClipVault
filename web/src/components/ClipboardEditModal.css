@@ -78,22 +78,21 @@
   border-color: var(--focus);
 }
 
+.modal-input-danger:focus {
+  border-color: var(--error);
+}
+
 .modal-input-mono {
   font-family: ui-monospace, Menlo, Consolas, 'Courier New', monospace;
   font-size: 13px;
 }
 
 .modal-value {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-btn);
-  background-color: var(--bg);
-  color: var(--text);
   font-size: 15px;
+  color: var(--text);
   line-height: 1.5;
   word-break: break-word;
+  padding: 2px 0;
 }
 
 .modal-value-mono {
@@ -104,7 +103,7 @@
 
 .uuid-row {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 8px;
 }
 
@@ -116,10 +115,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
+  width: 30px;
+  height: 30px;
   flex-shrink: 0;
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-btn);
+  border-radius: 8px;
   background-color: var(--surface);
   color: var(--text-2);
   cursor: pointer;
@@ -135,6 +135,10 @@
   background-color: var(--accent-soft);
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.modal-hint-warning {
+  color: var(--error);
 }
 
 .modal-hint {
