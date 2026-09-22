@@ -107,21 +107,29 @@ function ClipboardItem({ item, duplicate, onDelete, onEdit, onCopy }: ClipboardI
         <div className="view-mode">
           <div className="item-body">
             <span className="content-text">{item.content}</span>
-            <span className="item-time">
-              {new Date(item.created_at).toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </span>
-            {(item.device || item.device_type) && (
-              <span className="item-device">
-                <DeviceIcon type={item.device_type} />
-                {item.device && <span className="item-device-name">{item.device}</span>}
+            <div className="item-meta">
+              <span className="item-time">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>
+                  {new Date(item.created_at).toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
               </span>
-            )}
+              {(item.device || item.device_type) && (
+                <span className="item-device">
+                  <DeviceIcon type={item.device_type} />
+                  {item.device && <span className="item-device-name">{item.device}</span>}
+                </span>
+              )}
+            </div>
           </div>
           <div className="action-buttons">
             <button onClick={handleEdit} className="action-button edit" title="编辑">
