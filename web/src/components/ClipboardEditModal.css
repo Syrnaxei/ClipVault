@@ -83,6 +83,60 @@
   font-size: 13px;
 }
 
+.modal-value {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.modal-value-mono {
+  font-family: ui-monospace, Menlo, Consolas, 'Courier New', monospace;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.uuid-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.uuid-row .modal-value {
+  flex: 1;
+}
+
+.copy-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-btn);
+  background-color: var(--surface);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.copy-button:hover {
+  background-color: var(--surface-2);
+  color: var(--text);
+}
+
+.copy-button.copied {
+  background-color: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .modal-hint {
   margin: 6px 0 0;
   font-size: 12px;

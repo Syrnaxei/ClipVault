@@ -107,26 +107,25 @@
   color: var(--on-accent);
 }
 
-.check-duplicates-button {
+.add-item-button {
   align-self: flex-end;
   height: 46px;
-  padding: 0 18px;
-  border: 1px solid var(--border-strong);
-  background-color: var(--surface);
+  padding: 0 20px;
+  border: none;
+  background-color: var(--accent);
   border-radius: var(--radius-btn);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  color: var(--text);
+  color: var(--on-accent);
   transition: all 0.15s ease;
 }
 
-.check-duplicates-button:hover {
-  background-color: var(--surface-2);
-  border-color: var(--border-strong);
+.add-item-button:hover {
+  background-color: var(--accent-hover);
 }
 
-.check-duplicates-button:disabled,
+.add-item-button:disabled,
 .add-item-input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
