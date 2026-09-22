@@ -257,3 +257,20 @@
   color: var(--accent);
   font-weight: 500;
 }
+
+.settings-input {
+  width: 200px;
+  flex-shrink: 0;
+  padding: 9px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  transition: border-color 0.15s ease;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: var(--focus);
+}

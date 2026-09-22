@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { Router } from 'express';
 import db from '../db.js';
 import { ApiError } from '../auth.js';
-import { idParamSchema, itemContentSchema } from '../validation.js';
+import { idParamSchema, itemContentSchema, itemCreateSchema, normalizeDevice } from '../validation.js';
 import { broadcast } from '../ws.js';
 
 const router = Router();
@@ -10,7 +10,7 @@ const router = Router();
 function getItemOrThrow(id: number) {
   const item = db
     .prepare(
-      'SELECT id, clipboard_id, content, content_hash, created_at FROM clipboard_items WHERE id = ?',
+      'SELECT id, clipboard_id, content, content_hash, device, device_type, created_at FROM clipboard_items WHERE id = ?',
     )
     .get(id);
   if (!item) {
@@ -18,6 +18,31 @@ function getItemOrThrow(id: number) {
   }
   return item;
 }
+
+router.post('/', (req, res) => {
+  const data = itemCreateSchema.parse(req.body);
+  const clipboard = db
+    .prepare('SELECT id FROM clipboards WHERE uuid = ?')
+    .get(data.clipboard_uuid) as { id: number } | undefined;
+  if (!clipboard) {
+    throw new ApiError(404, 'NOT_FOUND', 'Clipboard not found');
+  }
+  const { device, device_type } = normalizeDevice(data.device, data.device_type);
+  const result = db
+    .prepare(
+      'INSERT INTO clipboard_items (clipboard_id, content, content_hash, device, device_type) VALUES (?, ?, ?, ?, ?)',
+    )
+    .run(
+      clipboard.id,
+      data.content,
+      createHash('sha256').update(data.content, 'utf8').digest('hex'),
+      device,
+      device_type,
+    );
+  const item = getItemOrThrow(result.lastInsertRowid as number);
+  res.status(201).json({ item });
+  broadcast('item.created', item);
+});
 
 router.patch('/:id', (req, res) => {
   const { id } = idParamSchema.parse(req.params);

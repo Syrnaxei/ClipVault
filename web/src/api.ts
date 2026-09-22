@@ -67,10 +67,14 @@ export const api = {
     }),
   listItems: (clipboardId: number) =>
     request<{ items: ClipboardItem[] }>(`/api/clipboards/${clipboardId}/items`),
-  createItem: (clipboardId: number, content: string) =>
-    request<{ item: ClipboardItem }>(`/api/clipboards/${clipboardId}/items`, {
+  createItem: (
+    clipboardUuid: string,
+    content: string,
+    deviceInfo?: { device: string; device_type: string },
+  ) =>
+    request<{ item: ClipboardItem }>('/api/items', {
       method: 'POST',
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ clipboard_uuid: clipboardUuid, content, ...deviceInfo }),
     }),
   updateItem: (id: number, content: string) =>
     request<{ item: ClipboardItem }>(`/api/items/${id}`, {

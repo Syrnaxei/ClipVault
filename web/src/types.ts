@@ -8,11 +8,24 @@ export interface Clipboard {
   latest_item_at?: string | null;
 }
 
+export const DEVICE_TYPES = [
+  'iPhone',
+  'iPad',
+  'Mac',
+  'PC',
+  'Web',
+  'Unknown',
+] as const;
+
+export type DeviceType = (typeof DEVICE_TYPES)[number];
+
 export interface ClipboardItem {
   id: number;
   clipboard_id: number;
   content: string;
   content_hash: string;
+  device: string | null;
+  device_type: DeviceType | null;
   created_at: string;
 }
 

@@ -35,7 +35,6 @@ db.exec(`
 const clipboardColumns = (
   db.pragma('table_info(clipboards)') as { name: string }[]
 ).map((col) => col.name);
-
 if (!clipboardColumns.includes('uuid')) {
   db.exec('ALTER TABLE clipboards ADD COLUMN uuid TEXT');
   const missing = db.prepare('SELECT id FROM clipboards WHERE uuid IS NULL').all() as {
@@ -50,6 +49,18 @@ if (!clipboardColumns.includes('uuid')) {
 
 if (!clipboardColumns.includes('pinned')) {
   db.exec('ALTER TABLE clipboards ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0');
+}
+
+const itemColumns = (
+  db.pragma('table_info(clipboard_items)') as { name: string }[]
+).map((col) => col.name);
+
+if (!itemColumns.includes('device')) {
+  db.exec('ALTER TABLE clipboard_items ADD COLUMN device TEXT');
+}
+
+if (!itemColumns.includes('device_type')) {
+  db.exec('ALTER TABLE clipboard_items ADD COLUMN device_type TEXT');
 }
 
 export default db;

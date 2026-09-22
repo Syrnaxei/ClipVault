@@ -6,6 +6,8 @@ interface SettingsProps {
   onThemeChange: (theme: 'light' | 'dark') => void;
   pinStyle: PinStyle;
   onPinStyleChange: (style: PinStyle) => void;
+  deviceName: string;
+  onDeviceNameChange: (name: string) => void;
   connected: boolean;
   onBack: () => void;
   onLogout: () => void;
@@ -16,6 +18,8 @@ function Settings({
   onThemeChange,
   pinStyle,
   onPinStyleChange,
+  deviceName,
+  onDeviceNameChange,
   connected,
   onBack,
   onLogout,
@@ -67,6 +71,19 @@ function Settings({
                 </button>
               ))}
             </div>
+          </div>
+          <div className="settings-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">设备名称</span>
+              <span className="settings-row-desc">添加条目时记录的来源设备，留空则不记录</span>
+            </div>
+            <input
+              className="settings-input"
+              value={deviceName}
+              maxLength={100}
+              placeholder="我的电脑"
+              onChange={(e) => onDeviceNameChange(e.target.value)}
+            />
           </div>
         </section>
 

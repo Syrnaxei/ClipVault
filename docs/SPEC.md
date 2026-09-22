@@ -141,8 +141,8 @@ CREATE INDEX idx_items_hash ON clipboard_items(clipboard_id, content_hash);
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
+| POST | `/api/items` | **独立插入 API**，body: `{ "clipboard_uuid": "string(uuid)", "content": "string", "device"?: "string", "device_type"?: "iPhone"\|"iPad"\|"Mac"\|"PC"\|"Web" }`；直接追加，不做去重（响应 `{ "item": ... }`） |
 | GET | `/api/clipboards/:id/items` | 该剪切板全部条目，按 `created_at DESC` |
-| POST | `/api/clipboards/:id/items` | **独立插入 API**，body: `{ "content": "string" }`；直接追加，不做去重（响应 `{ "item": ... }`） |
 | PATCH | `/api/items/:id` | 编辑条目内容，body: `{ "content": "string" }`；更新后重新计算哈希 |
 | DELETE | `/api/items/:id` | 删除单条条目 |
 | GET | `/api/clipboards/:id/duplicates` | 检查该剪切板内重复条目，返回按内容哈希分组的重复组列表（每组含组内全部条目）；无重复返回空数组 |
@@ -155,7 +155,7 @@ CREATE INDEX idx_items_hash ON clipboard_items(clipboard_id, content_hash);
 
 错误码：`VALIDATION_ERROR`(400)、`UNAUTHORIZED`(401)、`NOT_FOUND`(404)、`CONFLICT`(409，剪切板 UUID 重复)。
 
-**独立插入 API 的说明**：`POST /api/clipboards/:id/items` 即为区别于前端的独立入口，供桌面端脚本与 iOS 快捷指令直接调用，不支持批量；条目不记录来源设备。
+**独立插入 API 的说明**：`POST /api/items` 即为区别于前端的独立入口，供桌面端脚本与 iOS 快捷指令直接调用，不支持批量；目标剪切板由 body 中的 `clipboard_uuid` 指定；`device_type` 大小写不敏感，枚举外或缺失的值归一化为 `Unknown`，两字段均未传时不记录来源设备。
 
 ### 5.3 WebSocket 实时推送
 

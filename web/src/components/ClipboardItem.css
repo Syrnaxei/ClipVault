@@ -40,6 +40,21 @@
   color: var(--text-3);
 }
 
+.item-device {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 12px;
+  font-size: 12px;
+  letter-spacing: 0.12px;
+  color: var(--text-3);
+  vertical-align: middle;
+}
+
+.item-device svg {
+  flex-shrink: 0;
+}
+
 .action-buttons {
   position: absolute;
   top: 8px;

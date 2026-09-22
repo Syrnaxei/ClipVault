@@ -52,10 +52,22 @@ npm run dev
 server 运行时另开一个终端：
 
 ```bash
-curl -X POST http://localhost:3000/api/clipboards/1/items \
+curl -X POST http://localhost:3000/api/items \
   -H "Authorization: Bearer <你的密钥>" \
   -H "Content-Type: application/json" \
-  -d '{"content":"hello"}'
+  -d '{"clipboard_uuid":"<剪切板UUID>","content":"hello"}'
 ```
 
 浏览器中打开的页面应秒级出现该条目（WebSocket 推送）。
+
+可选携带设备来源字段 `device`（设备显示名）与 `device_type`（枚举：`iPhone` / `iPad` / `Mac` / `PC` / `Web`，大小写不敏感，其他值归一化为 `Unknown`）：
+
+```bash
+curl -X POST http://localhost:3000/api/items \
+  -H "Authorization: Bearer <你的密钥>" \
+  -H "Content-Type: application/json" \
+  -d '{"clipboard_uuid":"<剪切板UUID>","content":"hello","device":"我的iPhone","device_type":"iPhone"}'
+```
+
+- 条目左下角会显示对应的设备图标与设备名
+- 不传这两个字段时条目不显示设备信息（兼容旧客户端）

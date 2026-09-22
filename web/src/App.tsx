@@ -55,6 +55,9 @@ function App() {
   const [authed, setAuthed] = useState(hasApiKey());
   const [theme, setTheme] = useState<Theme>(initialTheme);
   const [pinStyle, setPinStyle] = useState<PinStyle>(loadPinStyle);
+  const [deviceName, setDeviceName] = useState(
+    () => localStorage.getItem('clipvault_device_name') ?? '我的电脑',
+  );
   const [view, setView] = useState<'main' | 'settings'>('main');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [clipboards, setClipboards] = useState<Clipboard[]>([]);
@@ -73,6 +76,10 @@ function App() {
   useEffect(() => {
     savePinStyle(pinStyle);
   }, [pinStyle]);
+
+  useEffect(() => {
+    localStorage.setItem('clipvault_device_name', deviceName);
+  }, [deviceName]);
 
   const refreshAll = useCallback(async () => {
     const { clipboards: list } = await api.listClipboards();
@@ -218,8 +225,14 @@ function App() {
   };
 
   const handleAddItem = async (content: string) => {
-    if (activeId === null) return;
-    await api.createItem(activeId, content);
+    const clipboard = clipboards.find((c) => c.id === activeId);
+    if (!clipboard) return;
+    const device = deviceName.trim();
+    await api.createItem(
+      clipboard.uuid,
+      content,
+      device ? { device, device_type: 'Web' } : undefined,
+    );
   };
 
   const handleEditItem = async (id: number, newContent: string) => {
@@ -263,6 +276,8 @@ function App() {
           onThemeChange={setTheme}
           pinStyle={pinStyle}
           onPinStyleChange={setPinStyle}
+          deviceName={deviceName}
+          onDeviceNameChange={setDeviceName}
           connected={connected}
           onBack={() => setView('main')}
           onLogout={() => {

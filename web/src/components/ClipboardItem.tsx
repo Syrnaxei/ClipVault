@@ -1,7 +1,57 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { ClipboardItem } from '../types';
+import { DEVICE_TYPES } from '../types';
 import PopConfirm from './PopConfirm';
 import './ClipboardItem.css';
+
+const DEVICE_ICONS: Record<string, ReactNode> = {
+  iPhone: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+      <line x1="12" y1="18" x2="12.01" y2="18"></line>
+    </svg>
+  ),
+  iPad: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+      <line x1="12" y1="18" x2="12.01" y2="18"></line>
+    </svg>
+  ),
+  Mac: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="3" width="16" height="12" rx="2" ry="2"></rect>
+      <path d="M2 19h20"></path>
+    </svg>
+  ),
+  PC: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+      <line x1="8" y1="21" x2="16" y2="21"></line>
+      <line x1="12" y1="17" x2="12" y2="21"></line>
+    </svg>
+  ),
+  Web: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="2" y1="12" x2="22" y2="12"></line>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+    </svg>
+  ),
+  Unknown: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+  ),
+};
+
+function DeviceIcon({ type }: { type: string | null }) {
+  const key = type
+    ? DEVICE_TYPES.find((t) => t.toLowerCase() === type.toLowerCase())
+    : undefined;
+  return <>{DEVICE_ICONS[key ?? ''] ?? DEVICE_ICONS.Unknown}</>;
+}
 
 interface ClipboardItemProps {
   item: ClipboardItem;
@@ -66,6 +116,12 @@ function ClipboardItem({ item, duplicate, onDelete, onEdit, onCopy }: ClipboardI
                 minute: '2-digit',
               })}
             </span>
+            {(item.device || item.device_type) && (
+              <span className="item-device">
+                <DeviceIcon type={item.device_type} />
+                {item.device && <span className="item-device-name">{item.device}</span>}
+              </span>
+            )}
           </div>
           <div className="action-buttons">
             <button onClick={handleEdit} className="action-button edit" title="编辑">
