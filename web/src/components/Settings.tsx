@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import './Settings.css';
 import { PIN_STYLES, type PinStyle } from '../pinStyle';
 
@@ -24,6 +25,19 @@ function Settings({
   onBack,
   onLogout,
 }: SettingsProps) {
+  const [editingDevice, setEditingDevice] = useState(false);
+  const [deviceDraft, setDeviceDraft] = useState(deviceName);
+
+  const startEditDevice = () => {
+    setDeviceDraft(deviceName);
+    setEditingDevice(true);
+  };
+
+  const saveDevice = () => {
+    onDeviceNameChange(deviceDraft.trim());
+    setEditingDevice(false);
+  };
+
   return (
     <div className="settings">
       <div className="settings-container">
@@ -77,13 +91,32 @@ function Settings({
               <span className="settings-row-label">设备名称</span>
               <span className="settings-row-desc">添加条目时记录的来源设备，留空则不记录</span>
             </div>
-            <input
-              className="settings-input"
-              value={deviceName}
-              maxLength={100}
-              placeholder="我的电脑"
-              onChange={(e) => onDeviceNameChange(e.target.value)}
-            />
+            {editingDevice ? (
+              <div className="device-edit">
+                <input
+                  className="settings-input"
+                  value={deviceDraft}
+                  maxLength={100}
+                  placeholder="我的电脑"
+                  autoFocus
+                  onChange={(e) => setDeviceDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') saveDevice();
+                    if (e.key === 'Escape') setEditingDevice(false);
+                  }}
+                />
+                <button className="device-save-button" onClick={saveDevice}>
+                  保存
+                </button>
+              </div>
+            ) : (
+              <div className="device-display">
+                <span className="device-value">{deviceName || '未设置'}</span>
+                <button className="device-edit-button" onClick={startEditDevice}>
+                  编辑
+                </button>
+              </div>
+            )}
           </div>
         </section>
 

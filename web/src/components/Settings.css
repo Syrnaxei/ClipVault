@@ -274,3 +274,58 @@
   outline: none;
   border-color: var(--focus);
 }
+
+.device-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.device-value {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.device-edit-button {
+  padding: 6px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background-color: var(--surface);
+  color: var(--text-2);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.device-edit-button:hover {
+  background-color: var(--surface-2);
+  color: var(--text);
+}
+
+.device-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.device-save-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--accent);
+  color: var(--on-accent);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.device-save-button:hover {
+  background-color: var(--accent-hover);
+}
