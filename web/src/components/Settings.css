@@ -169,3 +169,91 @@
   background-color: var(--error);
   color: var(--on-accent);
 }
+
+.pin-style-options {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pin-style-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 9px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background-color: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.pin-style-option:hover {
+  background-color: var(--surface-2);
+}
+
+.pin-style-option.selected {
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
+}
+
+.pin-style-swatch {
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 24px;
+  border-radius: 6px;
+  background-color: var(--accent);
+  overflow: hidden;
+}
+
+.pin-style-swatch.bar::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  border-radius: 1px;
+  background: rgba(250, 249, 245, 0.55);
+}
+
+.pin-style-swatch.corner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-style: solid;
+  border-width: 0 11px 11px 0;
+  border-color: transparent rgba(250, 249, 245, 0.4) transparent transparent;
+}
+
+.pin-style-swatch.stripes::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(250, 249, 245, 0.5) 0 2px,
+    transparent 2px 5px
+  );
+}
+
+.pin-style-swatch.notch {
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  border-top-right-radius: 0;
+}
+
+.pin-style-name {
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.pin-style-option.selected .pin-style-name {
+  color: var(--accent);
+  font-weight: 500;
+}

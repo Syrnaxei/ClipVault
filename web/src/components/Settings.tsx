@@ -1,14 +1,25 @@
 import './Settings.css';
+import { PIN_STYLES, type PinStyle } from '../pinStyle';
 
 interface SettingsProps {
   theme: 'light' | 'dark';
   onThemeChange: (theme: 'light' | 'dark') => void;
+  pinStyle: PinStyle;
+  onPinStyleChange: (style: PinStyle) => void;
   connected: boolean;
   onBack: () => void;
   onLogout: () => void;
 }
 
-function Settings({ theme, onThemeChange, connected, onBack, onLogout }: SettingsProps) {
+function Settings({
+  theme,
+  onThemeChange,
+  pinStyle,
+  onPinStyleChange,
+  connected,
+  onBack,
+  onLogout,
+}: SettingsProps) {
   return (
     <div className="settings">
       <div className="settings-container">
@@ -38,6 +49,24 @@ function Settings({ theme, onThemeChange, connected, onBack, onLogout }: Setting
             >
               <span className="toggle-knob" />
             </button>
+          </div>
+          <div className="settings-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">置顶选中样式</span>
+              <span className="settings-row-desc">置顶剪切板的几何标识样式</span>
+            </div>
+            <div className="pin-style-options">
+              {PIN_STYLES.map(({ value, label }) => (
+                <button
+                  key={value}
+                  className={`pin-style-option ${pinStyle === value ? 'selected' : ''}`}
+                  onClick={() => onPinStyleChange(value)}
+                >
+                  <span className={`pin-style-swatch ${value}`} />
+                  <span className="pin-style-name">{label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </section>
 

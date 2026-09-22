@@ -6,6 +6,7 @@ import ClipboardList from './components/ClipboardList';
 import Settings from './components/Settings';
 import { api, ApiKeyError, clearApiKey, getApiKey, hasApiKey, setApiKey } from './api';
 import { connectWs } from './ws';
+import { loadPinStyle, savePinStyle, type PinStyle } from './pinStyle';
 import type { Clipboard, ClipboardItem, DuplicateGroup, WsEvent } from './types';
 
 type Theme = 'light' | 'dark';
@@ -53,6 +54,7 @@ function KeyGate({ onAuthed }: { onAuthed: () => void }) {
 function App() {
   const [authed, setAuthed] = useState(hasApiKey());
   const [theme, setTheme] = useState<Theme>(initialTheme);
+  const [pinStyle, setPinStyle] = useState<PinStyle>(loadPinStyle);
   const [view, setView] = useState<'main' | 'settings'>('main');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [clipboards, setClipboards] = useState<Clipboard[]>([]);
@@ -67,6 +69,10 @@ function App() {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('clipvault_theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    savePinStyle(pinStyle);
+  }, [pinStyle]);
 
   const refreshAll = useCallback(async () => {
     const { clipboards: list } = await api.listClipboards();
@@ -255,6 +261,8 @@ function App() {
         <Settings
           theme={theme}
           onThemeChange={setTheme}
+          pinStyle={pinStyle}
+          onPinStyleChange={setPinStyle}
           connected={connected}
           onBack={() => setView('main')}
           onLogout={() => {
@@ -269,6 +277,7 @@ function App() {
             clipboards={clipboards}
             activeId={activeId}
             collapsed={!sidebarOpen}
+            pinStyle={pinStyle}
             onSelectClipboard={setActiveId}
             onAddClipboard={handleAddClipboard}
           />

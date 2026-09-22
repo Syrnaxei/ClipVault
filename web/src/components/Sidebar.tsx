@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import type { Clipboard } from '../types';
+import type { PinStyle } from '../pinStyle';
 import './Sidebar.css';
 
 interface SidebarProps {
   clipboards: Clipboard[];
   activeId: number | null;
   collapsed: boolean;
+  pinStyle: PinStyle;
   onSelectClipboard: (id: number) => void;
   onAddClipboard: (name: string) => Promise<void>;
 }
@@ -14,6 +16,7 @@ function Sidebar({
   clipboards,
   activeId,
   collapsed,
+  pinStyle,
   onSelectClipboard,
   onAddClipboard,
 }: SidebarProps) {
@@ -23,11 +26,17 @@ function Sidebar({
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const getTime = (clipboard: Clipboard) =>
+    clipboard.latest_item_at ? new Date(clipboard.latest_item_at).getTime() : 0;
+
   const filtered = clipboards
     .filter((clipboard) =>
       clipboard.name.toLowerCase().includes(searchTerm.toLowerCase()),
     )
-    .sort((a, b) => Number(b.pinned) - Number(a.pinned));
+    .sort((a, b) => {
+      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+      return getTime(b) - getTime(a);
+    });
 
   const openForm = () => {
     setAdding(true);
@@ -90,17 +99,13 @@ function Sidebar({
           {filtered.map((clipboard) => (
             <div
               key={clipboard.id}
-              className={`clipboard-card ${activeId === clipboard.id ? 'active' : ''}`}
+              className={`clipboard-card ${
+                clipboard.pinned ? `pin-${pinStyle}` : ''
+              } ${activeId === clipboard.id ? 'active' : ''}`}
               onClick={() => onSelectClipboard(clipboard.id)}
             >
               <div className="clipboard-info">
                 <span className="clipboard-name">
-                  {clipboard.pinned && (
-                    <svg className="clipboard-pin" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-label="已置顶">
-                      <path d="M12 17v5"></path>
-                      <path d="M9 10.76V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3.76a2 2 0 0 0 .59 1.42l1.82 1.82a1 1 0 0 1-.71 1.71H7.3a1 1 0 0 1-.71-1.71l1.82-1.82a2 2 0 0 0 .59-1.42z"></path>
-                    </svg>
-                  )}
                   {clipboard.name}
                 </span>
                 <div className="clipboard-meta">

@@ -30,6 +30,7 @@ code {
   --whisper: rgba(0, 0, 0, 0.05) 0px 4px 24px;
   --radius-card: 12px;
   --radius-btn: 12px;
+  --pin-mark: #c96442;
 }
 
 :root[data-theme='dark'] {
@@ -49,6 +50,7 @@ code {
   --error: #d97757;
   --ring: #4d4c48;
   --whisper: rgba(0, 0, 0, 0.4) 0px 4px 24px;
+  --pin-mark: #d97757;
 }
 
 button:focus-visible,

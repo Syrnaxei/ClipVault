@@ -1,4 +1,5 @@
 .clipboard-item-content {
+  position: relative;
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
@@ -20,7 +21,6 @@
 .item-body {
   flex: 1;
   min-width: 0;
-  margin-right: 15px;
 }
 
 .content-text {
@@ -41,8 +41,14 @@
 }
 
 .action-buttons {
+  position: absolute;
+  top: 8px;
+  right: 10px;
   display: flex;
-  gap: 6px;
+  gap: 2px;
+  padding: 2px;
+  background-color: var(--surface);
+  border-radius: 10px;
   opacity: 0;
   transition: opacity 0.15s ease;
 }
@@ -74,6 +80,10 @@
 .action-button.copy:hover {
   background-color: var(--accent-soft);
   color: var(--accent);
+}
+
+.clipboard-item-content.duplicate .action-buttons {
+  background-color: var(--accent-soft);
 }
 
 .clipboard-item-content.duplicate {
