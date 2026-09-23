@@ -56,7 +56,7 @@ ClipVault 是一个**纯文本剪切板多设备同步服务**。用户在任何
 - `/api/*` → `server:PORT`
 - `/ws` → `server:PORT`（WebSocket 升级）
 
-对外端口由 `docker-compose.yml` 的 `ports` 映射决定（如 `8088:80`），外部访问方式为 `http://<服务器IP>:8088`。
+对外端口由 `docker-compose.yml` 的 `ports` 映射决定（如 `31291:80`），外部访问方式为 `http://<服务器IP>:31291`。
 
 ## 3. 技术选型
 
@@ -246,7 +246,7 @@ clipvault/
 
 - `server`：环境变量 `API_KEY`（必填）、`PORT`；volume 挂载数据目录（SQLite 文件）。
 - `web`：多阶段构建，最终以 `nginx:alpine`（或纯文件 stage）形态将 `/usr/share/caddy` 产物通过 named volume 共享给 Caddy —— 实际实现取"构建产物 volume 共享"方案，`web` 容器无需常驻运行。
-- `caddy`：唯一暴露端口的容器（如 `8088:80`），挂载 web 构建产物 volume 与 Caddyfile。
+- `caddy`：唯一暴露端口的容器（如 `31291:80`），挂载 web 构建产物 volume 与 Caddyfile。
 - 数据持久化：named volume `clipvault-data` → `/data`（SQLite 数据库文件所在）。
 - 无 HTTPS（外部经 `IP:端口` 明文访问，由用户自行决定是否在前置网关加 TLS）。
 
