@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Clipboard, ClipboardItem, DuplicateGroup } from '../types';
+import type { Clipboard, ClipboardItem, DuplicateGroup, Plugin } from '../types';
 import ClipboardItemView from './ClipboardItem';
 import ClipboardEditModal from './ClipboardEditModal';
+import PluginConfirmModal from './PluginConfirmModal';
 import PopConfirm from './PopConfirm';
 import './ClipboardList.css';
 
@@ -10,10 +11,12 @@ interface ClipboardListProps {
   items: ClipboardItem[];
   loading: boolean;
   dupGroups: DuplicateGroup[] | null;
+  activePlugin: Plugin | null;
   onAddItem: (content: string) => void;
   onDeleteItem: (id: number) => void;
   onEditItem: (id: number, newContent: string) => void;
   onCopyItem: (content: string) => void;
+  onPluginApply: (item: ClipboardItem, result: string, pluginName: string) => Promise<void>;
   onCheckDuplicates: () => void;
   onClearDuplicates: () => void;
   onDeleteClipboard: (id: number) => void;
@@ -26,10 +29,12 @@ function ClipboardList({
   items,
   loading,
   dupGroups,
+  activePlugin,
   onAddItem,
   onDeleteItem,
   onEditItem,
   onCopyItem,
+  onPluginApply,
   onCheckDuplicates,
   onClearDuplicates,
   onDeleteClipboard,
@@ -40,6 +45,7 @@ function ClipboardList({
   const [newContent, setNewContent] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [pluginTarget, setPluginTarget] = useState<ClipboardItem | null>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -167,9 +173,11 @@ function ClipboardList({
               key={item.id}
               item={item}
               duplicate={duplicateIds.has(item.id)}
+              pluginName={activePlugin?.name ?? null}
               onDelete={onDeleteItem}
               onEdit={onEditItem}
               onCopy={onCopyItem}
+              onPlugin={setPluginTarget}
             />
           ))}
         {!loading && items.length === 0 && (
@@ -229,6 +237,21 @@ function ClipboardList({
           onSave={async (data) => {
             await onUpdateClipboard(clipboard.id, data);
             setEditModalOpen(false);
+          }}
+        />
+      )}
+
+      {pluginTarget !== null && activePlugin !== null && (
+        <PluginConfirmModal
+          plugin={activePlugin}
+          content={pluginTarget.content}
+          onCancel={() => setPluginTarget(null)}
+          onConfirm={async (result) => {
+            const target = pluginTarget;
+            setPluginTarget(null);
+            if (target) {
+              await onPluginApply(target, result, activePlugin.name);
+            }
           }}
         />
       )}

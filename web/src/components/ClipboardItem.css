@@ -102,6 +102,11 @@
   color: var(--accent);
 }
 
+.action-button.plugin:hover {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
 .clipboard-item-content.duplicate .action-buttons {
   background-color: var(--accent-soft);
 }

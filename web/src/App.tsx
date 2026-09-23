@@ -8,7 +8,7 @@ import PluginsView from './components/PluginsView';
 import { api, ApiKeyError, clearApiKey, getApiKey, hasApiKey, setApiKey } from './api';
 import { connectWs } from './ws';
 import { loadPinStyle, savePinStyle, type PinStyle } from './pinStyle';
-import type { Clipboard, ClipboardItem, DuplicateGroup, WsEvent } from './types';
+import type { Clipboard, ClipboardItem, DuplicateGroup, Plugin, WsEvent } from './types';
 
 type Theme = 'light' | 'dark';
 
@@ -65,6 +65,12 @@ function App() {
   const [itemsByClipboard, setItemsByClipboard] = useState<Record<number, ClipboardItem[]>>({});
   const [activeId, setActiveId] = useState<number | null>(null);
   const [dupGroups, setDupGroups] = useState<DuplicateGroup[] | null>(null);
+  const [activePlugin, setActivePlugin] = useState<Plugin | null>(null);
+  const [undoState, setUndoState] = useState<{
+    itemId: number;
+    original: string;
+    pluginName: string;
+  } | null>(null);
   const [connected, setConnected] = useState(false);
   const activeIdRef = useRef<number | null>(null);
   activeIdRef.current = activeId;
@@ -245,6 +251,40 @@ function App() {
     navigator.clipboard.writeText(content);
   };
 
+  const refreshActivePlugin = useCallback(async () => {
+    try {
+      const { plugins } = await api.listPlugins();
+      setActivePlugin(plugins.find((p) => p.enabled) ?? null);
+    } catch {
+      setActivePlugin(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (authed && view === 'main') {
+      refreshActivePlugin();
+    }
+  }, [authed, view, refreshActivePlugin]);
+
+  useEffect(() => {
+    if (!undoState) return;
+    const timer = setTimeout(() => setUndoState(null), 6000);
+    return () => clearTimeout(timer);
+  }, [undoState]);
+
+  const handlePluginApply = async (item: ClipboardItem, result: string, pluginName: string) => {
+    if (!activePlugin) return;
+    await api.updateItem(item.id, result, item.content);
+    setUndoState({ itemId: item.id, original: item.content, pluginName });
+  };
+
+  const handleUndoPlugin = async () => {
+    if (!undoState) return;
+    const { itemId, original } = undoState;
+    setUndoState(null);
+    await api.updateItem(itemId, original, null);
+  };
+
   const handleCheckDuplicates = async () => {
     if (activeId === null) return;
     const { groups } = await api.duplicates(activeId);
@@ -306,18 +346,41 @@ function App() {
             items={activeItems ?? []}
             loading={activeId !== null && activeItems === undefined}
             dupGroups={dupGroups}
+            activePlugin={activePlugin}
             onAddItem={handleAddItem}
             onDeleteItem={async (id) => {
               await api.deleteItem(id);
             }}
             onEditItem={handleEditItem}
             onCopyItem={handleCopyItem}
+            onPluginApply={handlePluginApply}
             onCheckDuplicates={handleCheckDuplicates}
             onClearDuplicates={() => setDupGroups(null)}
             onDeleteClipboard={handleDeleteClipboard}
             onUpdateClipboard={handleUpdateClipboard}
             onTogglePinned={handleTogglePinned}
           />
+        </div>
+      )}
+
+      {undoState && (
+        <div className="plugin-undo-toast" role="status">
+          <span>
+            已应用插件「{undoState.pluginName}」
+          </span>
+          <button className="plugin-undo-button" onClick={handleUndoPlugin}>
+            撤销
+          </button>
+          <button
+            className="plugin-undo-close"
+            aria-label="关闭"
+            onClick={() => setUndoState(null)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
       )}
     </div>

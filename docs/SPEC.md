@@ -95,7 +95,19 @@ CREATE TABLE clipboard_items (
   clipboard_id INTEGER NOT NULL REFERENCES clipboards(id) ON DELETE CASCADE,
   content      TEXT    NOT NULL,
   content_hash TEXT    NOT NULL,  -- SHA-256 hex(content)，用于手动"检查重复"功能
+  original_content TEXT,           -- 插件覆盖前的原文备份（单步撤销用），未备份时为 NULL
   created_at   TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
+
+CREATE TABLE plugins (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  name        TEXT    NOT NULL UNIQUE, -- 插件名，重名导入视为更新
+  author      TEXT    NOT NULL,
+  version     TEXT    NOT NULL,        -- x.y.z
+  description TEXT    NOT NULL,
+  code        TEXT    NOT NULL,        -- 插件 JS 代码（process(input) 函数）
+  enabled     INTEGER NOT NULL DEFAULT 0, -- 单选启用：同一时间至多一个为 1
+  created_at  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
 
 -- 重复检查分组 + 列表排序
@@ -143,9 +155,24 @@ CREATE INDEX idx_items_hash ON clipboard_items(clipboard_id, content_hash);
 |------|------|------|
 | POST | `/api/items` | **独立插入 API**，body: `{ "clipboard_uuid": "string(uuid)", "content": "string", "device"?: "string", "device_type"?: "iPhone"\|"iPad"\|"Mac"\|"PC"\|"Web" }`；直接追加，不做去重（响应 `{ "item": ... }`） |
 | GET | `/api/clipboards/:id/items` | 该剪切板全部条目，按 `created_at DESC` |
-| PATCH | `/api/items/:id` | 编辑条目内容，body: `{ "content": "string" }`；更新后重新计算哈希 |
+| PATCH | `/api/items/:id` | 编辑条目内容，body 至少一项：`{ "content"?: "string", "original_content"?: "string"\|null }`；更新 content 时重新计算哈希 |
 | DELETE | `/api/items/:id` | 删除单条条目 |
 | GET | `/api/clipboards/:id/duplicates` | 检查该剪切板内重复条目，返回按内容哈希分组的重复组列表（每组含组内全部条目）；无重复返回空数组 |
+
+**插件**
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/plugins` | 列出全部插件（含代码，全设备共享） |
+| POST | `/api/plugins` | 导入插件，body: `{ "name", "author", "version", "description", "code", "enabled"? }`；同名即更新（upsert）；`enabled: true` 时自动禁用其他插件，默认未启用 |
+| PATCH | `/api/plugins/:id` | 更新插件（至少一项字段）；`enabled: true` 为单选启用（服务端先清零其他），`enabled: false` 取消启用 |
+| DELETE | `/api/plugins/:id` | 删除插件（条目的 `original_content` 备份不受影响） |
+
+### 5.3 插件系统
+
+- 插件为全局通用的文本处理黑盒（`.CVT` 文件，格式见 `docs/PLUGINS.md`）：入口为条目文本，出口为处理后文本，`process(input)` 纯函数。
+- 前端 Web Worker 沙箱执行（无 DOM/网络访问，3 秒超时强杀）；异常/超时不覆盖原条目。
+- **单选启用**：同一时间至多一个插件启用；主界面条目悬停显示插件按钮，点击弹「原文 / 处理结果」双栏预览确认，确认后覆盖并把原文写入 `original_content`，toast 提供单步撤销。
 
 错误响应统一格式：
 

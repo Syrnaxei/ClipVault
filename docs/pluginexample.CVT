@@ -1,0 +1,15 @@
+/* ClipVault-Plugin
+{
+  "name": "合并为一行",
+  "author": "KanataN",
+  "version": "1.0.0",
+  "description": "把多行文本压缩成单行,行与行之间用一个空格分隔"
+}
+*/
+function process(input) {
+  return input
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .join(' ');
+}
