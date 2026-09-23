@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClipVault 插件管理 · 布局方案预览</title>
+<style>
+  :root {
+    --font-serif: Georgia, "Times New Roman", serif;
+    --font-sans: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    --font-mono: ui-monospace, Consolas, "Courier New", monospace;
+  }
+  [data-theme="light"] {
+    --bg: #f5f4ed;
+    --surface: #faf9f5;
+    --surface-strong: #ffffff;
+    --sand: #e8e6dc;
+    --border: #f0eee6;
+    --border-strong: #e8e6dc;
+    --text: #141413;
+    --text-2: #5e5d59;
+    --text-3: #87867f;
+    --brand: #c96442;
+    --brand-soft: #f4e3dc;
+    --ring: #d1cfc5;
+    --ok: #6a8a62;
+    --danger: #b53333;
+    --code-bg: #30302e;
+    --code-text: #faf9f5;
+    --shadow: 0 4px 24px rgba(0,0,0,0.05);
+  }
+  [data-theme="dark"] {
+    --bg: #141413;
+    --surface: #30302e;
+    --surface-strong: #3d3d3a;
+    --sand: #3d3d3a;
+    --border: #30302e;
+    --border-strong: #4d4c48;
+    --text: #faf9f5;
+    --text-2: #b0aea5;
+    --text-3: #87867f;
+    --brand: #d97757;
+    --brand-soft: #43302a;
+    --ring: #4d4c48;
+    --ok: #9db98f;
+    --danger: #e07a6a;
+    --code-bg: #232322;
+    --code-text: #e8e6dc;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+    transition: background .25s, color .25s;
+  }
+
+  /* ===== 预览控制条(非设计稿一部分) ===== */
+  .preview-bar {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px; flex-wrap: wrap;
+    font-size: 14px;
+  }
+  .preview-bar .label { color: var(--text-3); font-size: 12px; letter-spacing: .5px; text-transform: uppercase; }
+  .scheme-btn, .theme-btn {
+    font-family: var(--font-sans); font-size: 14px; cursor: pointer;
+    padding: 7px 16px; border-radius: 8px; border: none;
+    background: var(--surface); color: var(--text-2);
+    box-shadow: 0 0 0 1px var(--ring);
+    transition: all .15s;
+  }
+  .scheme-btn.active { background: var(--brand); color: #faf9f5; box-shadow: 0 0 0 1px var(--brand); }
+  .theme-btn { min-width: 88px; }
+
+  /* ===== 模拟页面框架 ===== */
+  .page {
+    max-width: 1180px; margin: 0 auto;
+    background: var(--bg);
+    border-radius: 16px;
+  }
+
+  /* Header */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px; border-bottom: 1px solid var(--border-strong);
+  }
+  .header-icon {
+    width: 34px; height: 34px; border-radius: 8px; border: none; cursor: pointer;
+    background: transparent; color: var(--text-2);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .header-icon:hover { background: var(--sand); }
+  .header-icon.active { background: var(--brand-soft); color: var(--brand); }
+  .logo { display: flex; align-items: center; gap: 8px; font-family: var(--font-serif); font-size: 20px; font-weight: 500; }
+  .logo svg { color: var(--brand); }
+
+  /* 页面标题区 */
+  .view-head { display: flex; align-items: flex-end; justify-content: space-between; padding: 28px 32px 20px; }
+  .view-title { font-family: var(--font-serif); font-weight: 500; font-size: 30px; line-height: 1.2; }
+  .view-sub { color: var(--text-2); font-size: 15px; margin-top: 6px; line-height: 1.6; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--font-sans); font-size: 15px; font-weight: 500;
+    padding: 9px 16px 9px 13px; border-radius: 8px; border: none; cursor: pointer;
+    transition: all .15s; line-height: 1.25;
+  }
+  .btn-terracotta { background: var(--brand); color: #faf9f5; box-shadow: 0 0 0 1px var(--brand); }
+  .btn-terracotta:hover { filter: brightness(1.05); }
+  .btn-sand { background: var(--sand); color: var(--text); box-shadow: 0 0 0 1px var(--ring); }
+  .btn-sand:hover { filter: brightness(0.98); }
+  .btn-ghost-danger { background: transparent; color: var(--danger); box-shadow: 0 0 0 1px var(--ring); }
+  .btn-ghost-danger:hover { background: var(--surface); }
+
+  /* ===== 方案 A: 档案柜 ===== */
+  .layout-A { display: grid; grid-template-columns: 300px 1fr; gap: 24px; padding: 0 32px 36px; align-items: start; }
+  .master-A { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: var(--shadow); }
+  .m-item-A {
+    padding: 13px 14px; border-radius: 8px; cursor: pointer; position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+  .m-item-A:last-child { border-bottom: none; }
+  .m-item-A:hover { background: var(--bg); }
+  .m-item-A.selected { background: var(--bg); box-shadow: 0 0 0 1px var(--ring); }
+  .m-name-A { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .m-meta-A { color: var(--text-3); font-size: 12px; margin-top: 4px; display: flex; gap: 10px; align-items: center; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .dot-on { background: var(--ok); }
+  .dot-off { background: var(--ring); }
+  .tag {
+    font-size: 11px; letter-spacing: .3px; padding: 2px 8px; border-radius: 24px;
+    background: var(--brand-soft); color: var(--brand); font-weight: 500;
+  }
+  .detail-A { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: 28px 32px; }
+  .d-title { font-family: var(--font-serif); font-weight: 500; font-size: 24px; }
+  .d-sub { color: var(--text-3); font-size: 13px; margin-top: 4px; }
+  .d-desc { color: var(--text-2); font-size: 15px; line-height: 1.6; margin: 16px 0 0; }
+  .d-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin-top: 22px; }
+  .field { background: var(--bg); border-radius: 8px; padding: 10px 14px; }
+  .field .k { font-size: 11px; letter-spacing: .5px; text-transform: uppercase; color: var(--text-3); }
+  .field .v { font-size: 14px; margin-top: 3px; }
+  .d-actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+  .code-block {
+    margin-top: 24px; background: var(--code-bg); color: var(--code-text);
+    border-radius: 12px; padding: 18px 20px;
+    font-family: var(--font-mono); font-size: 13px; line-height: 1.6; overflow: auto;
+    white-space: pre;
+  }
+
+  /* ===== 方案 B: 编辑部 ===== */
+  .layout-B { display: grid; grid-template-columns: 360px 1fr; gap: 0; padding: 0 32px 36px; align-items: stretch; }
+  .master-B { border-right: 1px solid var(--border-strong); padding-right: 24px; }
+  .m-item-B { padding: 16px 14px; border-radius: 10px; cursor: pointer; margin-bottom: 8px; }
+  .m-item-B:hover { background: var(--surface); }
+  .m-item-B.selected { background: var(--surface); box-shadow: 0 0 0 1px var(--ring), var(--shadow); }
+  .m-name-B { font-family: var(--font-serif); font-size: 18px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+  .m-desc-B { color: var(--text-2); font-size: 13px; line-height: 1.5; margin-top: 5px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .m-meta-B { color: var(--text-3); font-size: 12px; margin-top: 6px; display: flex; gap: 12px; align-items: center; }
+  .detail-B { padding-left: 28px; }
+  .detail-B .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 30px 34px; }
+  .author-line { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--brand); color: #faf9f5;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500; flex: none;
+  }
+  .author-line .name { font-size: 14px; font-weight: 500; }
+  .author-line .ver { color: var(--text-3); font-size: 13px; }
+  .divider { border: none; border-top: 1px solid var(--border-strong); margin: 22px 0; }
+  .kv-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .kv-row:last-child { border-bottom: none; }
+  .kv-row .k { color: var(--text-2); }
+  .kv-row .v { font-weight: 500; }
+
+  /* 开关 */
+  .switch { position: relative; width: 40px; height: 22px; flex: none; cursor: pointer; }
+  .switch input { display: none; }
+  .switch .track {
+    position: absolute; inset: 0; border-radius: 22px; background: var(--ring); transition: .2s;
+  }
+  .switch .track::after {
+    content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+    border-radius: 50%; background: #ffffff; transition: .2s; box-shadow: 0 1px 3px rgba(0,0,0,.25);
+  }
+  .switch input:checked + .track { background: var(--ok); }
+  .switch input:checked + .track::after { left: 20px; }
+  .switch-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .switch-row:last-child { border-bottom: none; }
+  .switch-row .hint { color: var(--text-3); font-size: 12px; margin-top: 2px; }
+
+  /* ===== 方案 C: 紧凑工作台 ===== */
+  .layout-C { padding: 0 32px 36px; }
+  .toolbar-C {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 16px; margin-bottom: 20px; box-shadow: var(--shadow); flex-wrap: wrap; gap: 10px;
+  }
+  .toolbar-C .left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .toolbar-C .name { font-family: var(--font-serif); font-size: 18px; font-weight: 500; }
+  .toolbar-C .ver { color: var(--text-3); font-size: 13px; }
+  .toolbar-C .right { display: flex; align-items: center; gap: 10px; }
+  .cols-C { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+  .panel-C { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); }
+  .panel-C .head { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 12px; letter-spacing: .5px; text-transform: uppercase; color: var(--text-3); }
+  .m-item-C { display: flex; align-items: center; gap: 10px; padding: 11px 16px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .m-item-C:last-child { border-bottom: none; }
+  .m-item-C:hover { background: var(--bg); }
+  .m-item-C.selected { background: var(--bg); box-shadow: inset 3px 0 0 var(--brand); }
+  .m-item-C .grow { flex: 1; }
+  .m-item-C .ver { color: var(--text-3); font-size: 12px; }
+  .detail-C { padding: 20px 24px; }
+  .d-desc-C { color: var(--text-2); font-size: 15px; line-height: 1.6; }
+  .meta-strip { display: flex; gap: 24px; margin-top: 16px; color: var(--text-3); font-size: 13px; flex-wrap: wrap; }
+  .meta-strip b { color: var(--text); font-weight: 500; }
+
+  /* 空状态示意(方案A右侧备用,不默认显示) */
+  .empty { text-align: center; padding: 60px 20px; color: var(--text-3); }
+
+  .note { max-width: 1180px; margin: 18px auto 0; color: var(--text-3); font-size: 13px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<div class="preview-bar">
+  <span class="label">方案</span>
+  <button class="scheme-btn active" data-scheme="A" onclick="show('A', this)">A · 档案柜</button>
+  <button class="scheme-btn" data-scheme="B" onclick="show('B', this)">B · 编辑部</button>
+  <button class="scheme-btn" data-scheme="C" onclick="show('C', this)">C · 紧凑工作台</button>
+  <span style="flex:1"></span>
+  <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙 暗色主题</button>
+</div>
+
+<div class="page">
+  <!-- 模拟 Header: 插件按钮在设置按钮左侧 -->
+  <div class="header">
+    <button class="header-icon" title="侧栏">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+    </button>
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+      <span>ClipVault</span>
+    </div>
+    <div style="display:flex; gap:6px;">
+      <button class="header-icon active" title="插件管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a2 2 0 0 1-2-2 2 2 0 0 1 2-2h2V14h4a2 2 0 0 0 2-2 2 2 0 0 0-2-2 2 2 0 0 1-2-2 2 2 0 0 1 2-2h3a1 1 0 0 1 1 1v5a2 2 0 0 1-2 2h-2v4a2 2 0 0 1-2 2h-2v2a2 2 0 0 1-2 2z" transform="scale(0.85) translate(2 1)"/><path d="M10 2a2 2 0 0 1 2 2v2h4a2 2 0 0 1 2 2v2h2a2 2 0 0 1 0 4h-2v4a2 2 0 0 1-2 2h-4v-2a2 2 0 0 0-4 0v2H4a2 2 0 0 1-2-2v-4h2a2 2 0 0 0 0-4H2V6a2 2 0 0 1 2-2h4V4a2 2 0 0 1 2-2z" transform="scale(0.85) translate(2 1)"/></svg>
+      </button>
+      <button class="header-icon" title="设置">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ 方案 A ============ -->
+  <section id="scheme-A">
+    <div class="view-head">
+      <div>
+        <div class="view-title">插件管理</div>
+        <div class="view-sub">3 个插件 · 导入的插件全设备共享,条目按钮执行默认插件</div>
+      </div>
+      <button class="btn btn-terracotta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        导入 .CVT 插件
+      </button>
+    </div>
+    <div class="layout-A">
+      <div class="master-A" id="masterA"></div>
+      <div class="detail-A">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div class="d-title" id="aName">去空白</div>
+            <div class="d-sub" id="aSub">v1.0.0 · KanataN</div>
+          </div>
+          <span class="tag" id="aTag">默认插件</span>
+        </div>
+        <p class="d-desc" id="aDesc">移除文本开头和结尾的空格、制表符与换行。</p>
+        <div class="d-fields">
+          <div class="field"><div class="k">名称</div><div class="v" id="aFName">去空白</div></div>
+          <div class="field"><div class="k">作者</div><div class="v" id="aFAuthor">KanataN</div></div>
+          <div class="field"><div class="k">版本</div><div class="v" id="aFVer">1.0.0</div></div>
+          <div class="field"><div class="k">导入时间</div><div class="v" id="aFTime">2026-09-23</div></div>
+        </div>
+        <div class="d-actions">
+          <button class="btn btn-sand" onclick="toggleEnable(this)">
+            <span class="dot dot-on" id="aDot" style="display:inline-block"></span>
+            <span id="aEnableText">已启用</span>
+          </button>
+          <button class="btn btn-sand" onclick="setDefault()">设为默认插件</button>
+          <span style="flex:1"></span>
+          <button class="btn btn-ghost-danger">删除插件</button>
+        </div>
+        <div class="code-block" id="aCode">function process(input) {
+  return input.trim();
+}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 方案 B ============ -->
+  <section id="scheme-B" style="display:none">
+    <div class="view-head">
+      <div>
+        <div class="view-title">插件管理</div>
+        <div class="view-sub">3 个插件 · 导入的插件全设备共享,条目按钮执行默认插件</div>
+      </div>
+      <button class="btn btn-terracotta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        导入 .CVT 插件
+      </button>
+    </div>
+    <div class="layout-B">
+      <div class="master-B" id="masterB"></div>
+      <div class="detail-B">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div class="d-title" id="bName">去空白</div>
+            <span class="tag" id="bTag">默认插件</span>
+          </div>
+          <div class="author-line">
+            <span class="avatar" id="bAvatar">K</span>
+            <span class="name" id="bAuthor">KanataN</span>
+            <span class="ver" id="bVer">v1.0.0</span>
+          </div>
+          <hr class="divider">
+          <p class="d-desc" id="bDesc">移除文本开头和结尾的空格、制表符与换行。</p>
+          <hr class="divider">
+          <div class="switch-row">
+            <div>
+              启用插件
+              <div class="hint">禁用后条目上不再显示该插件的按钮</div>
+            </div>
+            <label class="switch"><input type="checkbox" id="bEnabled" checked onchange="bEnable(this.checked)"><span class="track"></span></label>
+          </div>
+          <div class="switch-row">
+            <div>
+              默认插件
+              <div class="hint">条目上的插件按钮执行此插件</div>
+            </div>
+            <label class="switch"><input type="checkbox" id="bDefault" checked onchange="this.checked=true"><span class="track"></span></label>
+          </div>
+          <div class="d-actions" style="justify-content:flex-end;">
+            <button class="btn btn-ghost-danger">删除插件</button>
+          </div>
+        </div>
+        <div class="code-block" id="bCode">function process(input) {
+  return input.trim();
+}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 方案 C ============ -->
+  <section id="scheme-C" style="display:none">
+    <div class="view-head">
+      <div>
+        <div class="view-title">插件管理</div>
+        <div class="view-sub">3 个插件 · 导入的插件全设备共享,条目按钮执行默认插件</div>
+      </div>
+      <button class="btn btn-terracotta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        导入 .CVT 插件
+      </button>
+    </div>
+    <div class="layout-C">
+      <div class="toolbar-C">
+        <div class="left">
+          <span class="name" id="cName">去空白</span>
+          <span class="ver" id="cVer">v1.0.0</span>
+          <span class="tag" id="cTag">默认插件</span>
+        </div>
+        <div class="right">
+          <label class="switch" title="启用"><input type="checkbox" id="cEnabled" checked onchange="cEnable(this.checked)"><span class="track"></span></label>
+          <button class="btn btn-sand" onclick="setDefault()">设为默认</button>
+          <button class="btn btn-ghost-danger">删除</button>
+        </div>
+      </div>
+      <div class="cols-C">
+        <div class="panel-C">
+          <div class="head">已导入插件</div>
+          <div id="masterC"></div>
+        </div>
+        <div class="panel-C">
+          <div class="head">详情与代码</div>
+          <div class="detail-C">
+            <div class="d-desc-C" id="cDesc">移除文本开头和结尾的空格、制表符与换行。</div>
+            <div class="meta-strip">
+              <span>作者 <b id="cAuthor">KanataN</b></span>
+              <span>导入于 <b id="cTime">2026-09-23</b></span>
+              <span>状态 <b id="cState">已启用</b></span>
+            </div>
+            <div class="code-block" id="cCode" style="margin-top:18px;">function process(input) {
+  return input.trim();
+}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="note">
+    说明:三个方案共享同一套 DESIGN.md 视觉规范(Parchment/Ivory 底色、Serif 标题、ring shadow、暖色系)。差异在布局密度——A 偏"档案卡片",元数据网格化;B 偏"编辑部文章",列表直接展示描述、设置用开关;C 偏"工作台",工具条置顶、信息最紧凑。示例数据:3 个插件,其一禁用、其一默认。点击左侧列表可切换插件。
+  </div>
+</div>
+
+<script>
+  const PLUGINS = [
+    { name: "去空白", author: "KanataN", version: "1.0.0", time: "2026-09-23",
+      desc: "移除文本开头和结尾的空格、制表符与换行。", enabled: true, isDefault: true,
+      code: "function process(input) {\n  return input.trim();\n}" },
+    { name: "合并为一行", author: "KanataN", version: "1.2.0", time: "2026-09-22",
+      desc: "把多行文本压缩成单行,行与行之间用一个空格分隔。", enabled: true, isDefault: false,
+      code: "function process(input) {\n  return input\n    .split(/\\r?\\n/)\n    .map((line) => line.trim())\n    .filter((line) => line.length > 0)\n    .join(' ');\n}" },
+    { name: "全角转半角", author: "Syrnaxei", version: "0.9.1", time: "2026-09-20",
+      desc: "把文本中的全角数字与字母转换为半角,常用于修正中文输入法产生的全角字符。", enabled: false, isDefault: false,
+      code: "function process(input) {\n  return input.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (ch) =>\n    String.fromCharCode(ch.charCodeAt(0) - 0xfee0),\n  );\n}" },
+  ];
+  let cur = 0;
+
+  function initials(n) { return n.slice(0, 1); }
+
+  function renderMaster() {
+    document.getElementById("masterA").innerHTML = PLUGINS.map((p, i) => `
+      <div class="m-item-A ${i === cur ? "selected" : ""}" onclick="sel(${i})">
+        <div class="m-name-A"><span class="dot ${p.enabled ? "dot-on" : "dot-off"}"></span>${p.name}${p.isDefault ? '<span class="tag">默认</span>' : ""}</div>
+        <div class="m-meta-A"><span>v${p.version}</span><span>${p.author}</span></div>
+      </div>`).join("");
+    document.getElementById("masterB").innerHTML = PLUGINS.map((p, i) => `
+      <div class="m-item-B ${i === cur ? "selected" : ""}" onclick="sel(${i})">
+        <div class="m-name-B">${p.name}${p.isDefault ? '<span class="tag">默认</span>' : ""}</div>
+        <div class="m-desc-B">${p.desc}</div>
+        <div class="m-meta-B"><span class="dot ${p.enabled ? "dot-on" : "dot-off"}"></span><span>v${p.version}</span><span>${p.author}</span></div>
+      </div>`).join("");
+    document.getElementById("masterC").innerHTML = PLUGINS.map((p, i) => `
+      <div class="m-item-C ${i === cur ? "selected" : ""}" onclick="sel(${i})">
+        <span class="dot ${p.enabled ? "dot-on" : "dot-off"}"></span>
+        <span class="grow">${p.name}</span>
+        <span class="ver">v${p.version}</span>
+      </div>`).join("");
+  }
+
+  function renderDetail() {
+    const p = PLUGINS[cur];
+    // A
+    aName.textContent = aFName.textContent = aName.textContent = p.name;
+    aSub.textContent = `v${p.version} · ${p.author}`;
+    aFAuthor.textContent = p.author; aFVer.textContent = p.version; aFTime.textContent = p.time;
+    aDesc.textContent = p.desc; aCode.textContent = p.code;
+    aTag.style.display = p.isDefault ? "" : "none";
+    aDot.className = `dot ${p.enabled ? "dot-on" : "dot-off"}`;
+    aEnableText.textContent = p.enabled ? "已启用" : "已禁用";
+    // B
+    bName.textContent = p.name; bAuthor.textContent = p.author; bVer.textContent = `v${p.version}`;
+    bAvatar.textContent = initials(p.author); bDesc.textContent = p.desc; bCode.textContent = p.code;
+    bTag.style.display = p.isDefault ? "" : "none";
+    bEnabled.checked = p.enabled; bDefault.checked = p.isDefault;
+    // C
+    cName.textContent = p.name; cVer.textContent = `v${p.version}`; cDesc.textContent = p.desc;
+    cAuthor.textContent = p.author; cTime.textContent = p.time; cCode.textContent = p.code;
+    cTag.style.display = p.isDefault ? "" : "none";
+    cEnabled.checked = p.enabled;
+    cState.textContent = p.enabled ? "已启用" : "已禁用";
+  }
+
+  function sel(i) { cur = i; renderMaster(); renderDetail(); }
+  function toggleEnable(btn) { PLUGINS[cur].enabled = !PLUGINS[cur].enabled; renderMaster(); renderDetail(); }
+  function bEnable(v) { PLUGINS[cur].enabled = v; renderMaster(); renderDetail(); }
+  function cEnable(v) { PLUGINS[cur].enabled = v; renderMaster(); renderDetail(); }
+  function setDefault() { PLUGINS.forEach(p => p.isDefault = false); PLUGINS[cur].isDefault = true; renderMaster(); renderDetail(); }
+
+  function show(id, btn) {
+    ["A", "B", "C"].forEach(s => document.getElementById("scheme-" + s).style.display = s === id ? "" : "none");
+    document.querySelectorAll(".scheme-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  }
+  function toggleTheme() {
+    const html = document.documentElement;
+    const dark = html.dataset.theme === "dark";
+    html.dataset.theme = dark ? "light" : "dark";
+    themeBtn.textContent = dark ? "🌙 暗色主题" : "☀️ 亮色主题";
+  }
+  renderMaster(); renderDetail();
+</script>
+</body>
+</html>

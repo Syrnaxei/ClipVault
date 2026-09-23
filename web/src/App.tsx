@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import ClipboardList from './components/ClipboardList';
 import Settings from './components/Settings';
+import PluginsView from './components/PluginsView';
 import { api, ApiKeyError, clearApiKey, getApiKey, hasApiKey, setApiKey } from './api';
 import { connectWs } from './ws';
 import { loadPinStyle, savePinStyle, type PinStyle } from './pinStyle';
@@ -58,7 +59,7 @@ function App() {
   const [deviceName, setDeviceName] = useState(
     () => localStorage.getItem('clipvault_device_name') ?? '我的电脑',
   );
-  const [view, setView] = useState<'main' | 'settings'>('main');
+  const [view, setView] = useState<'main' | 'settings' | 'plugins'>('main');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [clipboards, setClipboards] = useState<Clipboard[]>([]);
   const [itemsByClipboard, setItemsByClipboard] = useState<Record<number, ClipboardItem[]>>({});
@@ -269,6 +270,8 @@ function App() {
         onToggleSidebar={() => setSidebarOpen((v) => !v)}
         settingsOpen={view === 'settings'}
         onToggleSettings={() => setView((v) => (v === 'settings' ? 'main' : 'settings'))}
+        pluginsOpen={view === 'plugins'}
+        onTogglePlugins={() => setView((v) => (v === 'plugins' ? 'main' : 'plugins'))}
       />
       {view === 'settings' ? (
         <Settings
@@ -286,6 +289,8 @@ function App() {
             setView('main');
           }}
         />
+      ) : view === 'plugins' ? (
+        <PluginsView onBack={() => setView('main')} />
       ) : (
         <div className="main-container">
           <Sidebar

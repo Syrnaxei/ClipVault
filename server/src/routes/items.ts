@@ -2,16 +2,22 @@ import { createHash } from 'node:crypto';
 import { Router } from 'express';
 import db from '../db.js';
 import { ApiError } from '../auth.js';
-import { idParamSchema, itemContentSchema, itemCreateSchema, normalizeDevice } from '../validation.js';
+import {
+  idParamSchema,
+  itemCreateSchema,
+  itemUpdateSchema,
+  normalizeDevice,
+} from '../validation.js';
 import { broadcast } from '../ws.js';
 
 const router = Router();
 
+const ITEM_FIELDS =
+  'id, clipboard_id, content, content_hash, device, device_type, original_content, created_at';
+
 function getItemOrThrow(id: number) {
   const item = db
-    .prepare(
-      'SELECT id, clipboard_id, content, content_hash, device, device_type, created_at FROM clipboard_items WHERE id = ?',
-    )
+    .prepare(`SELECT ${ITEM_FIELDS} FROM clipboard_items WHERE id = ?`)
     .get(id);
   if (!item) {
     throw new ApiError(404, 'NOT_FOUND', 'Item not found');
@@ -46,14 +52,17 @@ router.post('/', (req, res) => {
 
 router.patch('/:id', (req, res) => {
   const { id } = idParamSchema.parse(req.params);
-  const { content } = itemContentSchema.parse(req.body);
-  getItemOrThrow(id);
+  const data = itemUpdateSchema.parse(req.body);
+  const item = getItemOrThrow(id) as Record<string, unknown>;
+  const content = data.content ?? (item.content as string);
   const contentHash = createHash('sha256').update(content, 'utf8').digest('hex');
-  db.prepare('UPDATE clipboard_items SET content = ?, content_hash = ? WHERE id = ?').run(
-    content,
-    contentHash,
-    id,
-  );
+  const originalContent =
+    data.original_content !== undefined
+      ? data.original_content
+      : (item.original_content ?? null);
+  db.prepare(
+    'UPDATE clipboard_items SET content = ?, content_hash = ?, original_content = ? WHERE id = ?',
+  ).run(content, contentHash, originalContent, id);
   const updated = getItemOrThrow(id);
   res.json({ item: updated });
   broadcast('item.updated', updated);

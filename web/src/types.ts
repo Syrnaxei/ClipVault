@@ -26,6 +26,18 @@ export interface ClipboardItem {
   content_hash: string;
   device: string | null;
   device_type: DeviceType | null;
+  original_content: string | null;
+  created_at: string;
+}
+
+export interface Plugin {
+  id: number;
+  name: string;
+  author: string;
+  version: string;
+  description: string;
+  code: string;
+  enabled: boolean;
   created_at: string;
 }
 

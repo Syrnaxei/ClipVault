@@ -17,7 +17,7 @@ router.get('/:id/items', (req, res) => {
   getClipboardOrThrow(id);
   const items = db
     .prepare(
-      'SELECT id, clipboard_id, content, content_hash, device, device_type, created_at FROM clipboard_items WHERE clipboard_id = ? ORDER BY created_at DESC',
+      'SELECT id, clipboard_id, content, content_hash, device, device_type, original_content, created_at FROM clipboard_items WHERE clipboard_id = ? ORDER BY created_at DESC',
     )
     .all(id);
   res.json({ items });
@@ -36,7 +36,7 @@ router.get('/:id/duplicates', (req, res) => {
     )
     .all(id) as { content_hash: string; cnt: number }[];
   const itemsStmt = db.prepare(
-    'SELECT id, clipboard_id, content, content_hash, device, device_type, created_at FROM clipboard_items WHERE clipboard_id = ? AND content_hash = ? ORDER BY created_at DESC',
+    'SELECT id, clipboard_id, content, content_hash, device, device_type, original_content, created_at FROM clipboard_items WHERE clipboard_id = ? AND content_hash = ? ORDER BY created_at DESC',
   );
   const groups = rows.map((row) => ({
     hash: row.content_hash,

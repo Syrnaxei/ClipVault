@@ -1,4 +1,4 @@
-import type { Clipboard, ClipboardItem, DuplicateGroup } from './types';
+import type { Clipboard, ClipboardItem, DuplicateGroup, Plugin } from './types';
 
 const KEY_STORAGE = 'clipvault_api_key';
 
@@ -76,13 +76,50 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ clipboard_uuid: clipboardUuid, content, ...deviceInfo }),
     }),
-  updateItem: (id: number, content: string) =>
+  updateItem: (
+    id: number,
+    content: string,
+    originalContent?: string | null,
+  ) =>
     request<{ item: ClipboardItem }>(`/api/items/${id}`, {
       method: 'PATCH',
-      body: JSON.stringify({ content }),
+      body: JSON.stringify(
+        originalContent === undefined
+          ? { content }
+          : { content, original_content: originalContent },
+      ),
     }),
   deleteItem: (id: number) =>
     request<void>(`/api/items/${id}`, { method: 'DELETE' }),
   duplicates: (clipboardId: number) =>
     request<{ groups: DuplicateGroup[] }>(`/api/clipboards/${clipboardId}/duplicates`),
+  listPlugins: () => request<{ plugins: Plugin[] }>('/api/plugins'),
+  createPlugin: (data: {
+    name: string;
+    author: string;
+    version: string;
+    description: string;
+    code: string;
+  }) =>
+    request<{ plugin: Plugin }>('/api/plugins', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updatePlugin: (
+    id: number,
+    data: {
+      name?: string;
+      author?: string;
+      version?: string;
+      description?: string;
+      code?: string;
+      enabled?: boolean;
+    },
+  ) =>
+    request<{ plugin: Plugin }>(`/api/plugins/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  deletePlugin: (id: number) =>
+    request<void>(`/api/plugins/${id}`, { method: 'DELETE' }),
 };

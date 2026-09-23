@@ -5,6 +5,7 @@ import { auth } from './auth.js';
 import { errorHandler } from './errors.js';
 import clipboardsRouter from './routes/clipboards.js';
 import itemsRouter from './routes/items.js';
+import pluginsRouter from './routes/plugins.js';
 import { initWs } from './ws.js';
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(auth);
 
 app.use('/api/clipboards', clipboardsRouter);
 app.use('/api/items', itemsRouter);
+app.use('/api/plugins', pluginsRouter);
 
 app.use(errorHandler);
 

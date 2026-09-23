@@ -63,4 +63,21 @@ if (!itemColumns.includes('device_type')) {
   db.exec('ALTER TABLE clipboard_items ADD COLUMN device_type TEXT');
 }
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS plugins (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    name        TEXT    NOT NULL UNIQUE,
+    author      TEXT    NOT NULL,
+    version     TEXT    NOT NULL,
+    description TEXT    NOT NULL,
+    code        TEXT    NOT NULL,
+    enabled     INTEGER NOT NULL DEFAULT 0,
+    created_at  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+  );
+`);
+
+if (!itemColumns.includes('original_content')) {
+  db.exec('ALTER TABLE clipboard_items ADD COLUMN original_content TEXT');
+}
+
 export default db;
