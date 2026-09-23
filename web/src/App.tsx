@@ -307,6 +307,7 @@ function App() {
     <div className="app">
       <Header
         sidebarOpen={sidebarOpen}
+        showSidebarToggle={view === 'main'}
         onToggleSidebar={() => setSidebarOpen((v) => !v)}
         settingsOpen={view === 'settings'}
         onToggleSettings={() => setView((v) => (v === 'settings' ? 'main' : 'settings'))}

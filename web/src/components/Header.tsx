@@ -2,6 +2,7 @@ import './Header.css';
 
 interface HeaderProps {
   sidebarOpen: boolean;
+  showSidebarToggle: boolean;
   onToggleSidebar: () => void;
   settingsOpen: boolean;
   onToggleSettings: () => void;
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 function Header({
   sidebarOpen,
+  showSidebarToggle,
   onToggleSidebar,
   settingsOpen,
   onToggleSettings,
@@ -20,17 +22,19 @@ function Header({
   return (
     <header className="header">
       <div className="header-left">
-        <button
-          className="header-icon-button"
-          onClick={onToggleSidebar}
-          title={sidebarOpen ? '收起侧栏' : '展开侧栏'}
-          aria-label={sidebarOpen ? '收起侧栏' : '展开侧栏'}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="9" y1="3" x2="9" y2="21"></line>
-          </svg>
-        </button>
+        {showSidebarToggle && (
+          <button
+            className="header-icon-button"
+            onClick={onToggleSidebar}
+            title={sidebarOpen ? '收起侧栏' : '展开侧栏'}
+            aria-label={sidebarOpen ? '收起侧栏' : '展开侧栏'}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+          </button>
+        )}
       </div>
 
       <div className="header-center">
