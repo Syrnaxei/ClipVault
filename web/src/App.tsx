@@ -8,6 +8,11 @@ import PluginsView from './components/PluginsView';
 import { api, ApiKeyError, clearApiKey, getApiKey, hasApiKey, setApiKey } from './api';
 import { connectWs } from './ws';
 import { loadPinStyle, savePinStyle, type PinStyle } from './pinStyle';
+import {
+  loadItemActions,
+  saveItemActions,
+  type ItemActionSetting,
+} from './itemActions';
 import type { Clipboard, ClipboardItem, DuplicateGroup, Plugin, WsEvent } from './types';
 
 type Theme = 'light' | 'dark';
@@ -56,6 +61,7 @@ function App() {
   const [authed, setAuthed] = useState(hasApiKey());
   const [theme, setTheme] = useState<Theme>(initialTheme);
   const [pinStyle, setPinStyle] = useState<PinStyle>(loadPinStyle);
+  const [itemActions, setItemActions] = useState<ItemActionSetting>(loadItemActions);
   const [deviceName, setDeviceName] = useState(
     () => localStorage.getItem('clipvault_device_name') ?? '我的电脑',
   );
@@ -83,6 +89,10 @@ function App() {
   useEffect(() => {
     savePinStyle(pinStyle);
   }, [pinStyle]);
+
+  useEffect(() => {
+    saveItemActions(itemActions);
+  }, [itemActions]);
 
   useEffect(() => {
     localStorage.setItem('clipvault_device_name', deviceName);
@@ -323,6 +333,8 @@ function App() {
           deviceName={deviceName}
           onDeviceNameChange={setDeviceName}
           connected={connected}
+          itemActions={itemActions}
+          onItemActionsChange={setItemActions}
           onBack={() => setView('main')}
           onLogout={() => {
             clearApiKey();
@@ -348,6 +360,7 @@ function App() {
             loading={activeId !== null && activeItems === undefined}
             dupGroups={dupGroups}
             activePlugin={activePlugin}
+            itemActions={itemActions}
             onAddItem={handleAddItem}
             onDeleteItem={async (id) => {
               await api.deleteItem(id);

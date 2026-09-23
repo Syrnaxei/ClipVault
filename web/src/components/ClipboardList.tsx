@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Clipboard, ClipboardItem, DuplicateGroup, Plugin } from '../types';
+import type { ItemActionSetting } from '../itemActions';
 import ClipboardItemView from './ClipboardItem';
 import ClipboardEditModal from './ClipboardEditModal';
 import PluginConfirmModal from './PluginConfirmModal';
@@ -12,6 +13,7 @@ interface ClipboardListProps {
   loading: boolean;
   dupGroups: DuplicateGroup[] | null;
   activePlugin: Plugin | null;
+  itemActions: ItemActionSetting;
   onAddItem: (content: string) => void;
   onDeleteItem: (id: number) => void;
   onEditItem: (id: number, newContent: string) => void;
@@ -30,6 +32,7 @@ function ClipboardList({
   loading,
   dupGroups,
   activePlugin,
+  itemActions,
   onAddItem,
   onDeleteItem,
   onEditItem,
@@ -195,6 +198,7 @@ function ClipboardList({
               item={item}
               duplicate={duplicateIds.has(item.id)}
               pluginName={activePlugin?.name ?? null}
+              itemActions={itemActions}
               onDelete={onDeleteItem}
               onEdit={onEditItem}
               onCopy={onCopyItem}

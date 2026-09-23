@@ -1,6 +1,37 @@
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import './Settings.css';
 import { PIN_STYLES, type PinStyle } from '../pinStyle';
+import {
+  ITEM_ACTIONS,
+  type ItemActionId,
+  type ItemActionSetting,
+} from '../itemActions';
+
+const ACTION_ICONS: Record<ItemActionId, React.ReactNode> = {
+  plugin: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02Z"></path>
+    </svg>
+  ),
+  edit: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+    </svg>
+  ),
+  delete: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="3 6 5 6 21 6"></polyline>
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    </svg>
+  ),
+  copy: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    </svg>
+  ),
+};
 
 interface SettingsProps {
   theme: 'light' | 'dark';
@@ -10,6 +41,8 @@ interface SettingsProps {
   deviceName: string;
   onDeviceNameChange: (name: string) => void;
   connected: boolean;
+  itemActions: ItemActionSetting;
+  onItemActionsChange: (setting: ItemActionSetting) => void;
   onBack: () => void;
   onLogout: () => void;
 }
@@ -22,11 +55,45 @@ function Settings({
   deviceName,
   onDeviceNameChange,
   connected,
+  itemActions,
+  onItemActionsChange,
   onBack,
   onLogout,
 }: SettingsProps) {
   const [editingDevice, setEditingDevice] = useState(false);
   const [deviceDraft, setDeviceDraft] = useState(deviceName);
+  const dragActionId = useRef<ItemActionId | null>(null);
+  const tilesRef = useRef<HTMLDivElement>(null);
+  const blankDragRef = useRef<HTMLDivElement>(null);
+  const tilePositions = useRef<Map<ItemActionId, DOMRect>>(new Map());
+
+  useLayoutEffect(() => {
+    if (tilePositions.current.size === 0) return;
+    const container = tilesRef.current;
+    if (!container) return;
+    container.querySelectorAll<HTMLElement>('[data-action-id]').forEach((el) => {
+      const id = el.dataset.actionId as ItemActionId;
+      const prev = tilePositions.current.get(id);
+      if (!prev) return;
+      const dx = prev.left - el.getBoundingClientRect().left;
+      if (dx === 0) return;
+      el.style.transition = 'none';
+      el.style.transform = `translateX(${dx}px)`;
+      requestAnimationFrame(() => {
+        el.style.transition = 'transform 0.25s ease';
+        el.style.transform = '';
+        el.addEventListener(
+          'transitionend',
+          () => {
+            el.style.transition = '';
+            el.style.transform = '';
+          },
+          { once: true },
+        );
+      });
+    });
+    tilePositions.current = new Map();
+  }, [itemActions.order]);
 
   const startEditDevice = () => {
     setDeviceDraft(deviceName);
@@ -36,6 +103,29 @@ function Settings({
   const saveDevice = () => {
     onDeviceNameChange(deviceDraft.trim());
     setEditingDevice(false);
+  };
+
+  const reorderAction = (targetId: ItemActionId) => {
+    const fromId = dragActionId.current;
+    if (!fromId || fromId === targetId) return;
+    const order = [...itemActions.order];
+    const from = order.indexOf(fromId);
+    const to = order.indexOf(targetId);
+    if (from < 0 || to < 0) return;
+    tilesRef.current?.querySelectorAll<HTMLElement>('[data-action-id]').forEach((el) => {
+      const id = el.dataset.actionId as ItemActionId;
+      if (id) tilePositions.current.set(id, el.getBoundingClientRect());
+    });
+    order.splice(from, 1);
+    order.splice(to, 0, fromId);
+    onItemActionsChange({ ...itemActions, order });
+  };
+
+  const toggleActionHidden = (id: ItemActionId) => {
+    const hidden = itemActions.hidden.includes(id)
+      ? itemActions.hidden.filter((h) => h !== id)
+      : [...itemActions.hidden, id];
+    onItemActionsChange({ ...itemActions, hidden });
   };
 
   return (
@@ -117,6 +207,57 @@ function Settings({
                 </button>
               </div>
             )}
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <h2 className="settings-section-title">条目操作</h2>
+          <div className="settings-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">操作按钮</span>
+              <span className="settings-row-desc">
+                拖动图标调整顺序，点击图标切换显示 / 隐藏
+              </span>
+            </div>
+            <div ref={blankDragRef} className="drag-blank" aria-hidden="true" />
+            <div className="item-action-tiles" ref={tilesRef}>
+              {itemActions.order.map((id) => {
+                const action = ITEM_ACTIONS.find((a) => a.id === id);
+                if (!action) return null;
+                const hidden = itemActions.hidden.includes(id);
+                return (
+                  <button
+                    key={id}
+                    data-action-id={id}
+                    className={`item-action-tile ${hidden ? 'hidden' : ''}`}
+                    draggable
+                    onDragStart={(e) => {
+                      dragActionId.current = id;
+                      e.dataTransfer.effectAllowed = 'move';
+                      if (blankDragRef.current) {
+                        e.dataTransfer.setDragImage(blankDragRef.current, 0, 0);
+                      }
+                    }}
+                    onDragEnd={() => {
+                      dragActionId.current = null;
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'move';
+                    }}
+                    onDragEnter={() => reorderAction(id)}
+                    onDrop={(e) => e.preventDefault()}
+                    onClick={() => toggleActionHidden(id)}
+                    title={hidden ? `${action.label}（已隐藏，点击显示）` : `${action.label}（点击隐藏）`}
+                    aria-label={`${action.label}，${hidden ? '已隐藏' : '已显示'}，拖动调整顺序，点击切换显示`}
+                  >
+                    <span className="item-action-tile-icon">
+                      {ACTION_ICONS[id]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
 

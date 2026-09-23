@@ -329,3 +329,50 @@
 .device-save-button:hover {
   background-color: var(--accent-hover);
 }
+
+.item-action-tiles {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.drag-blank {
+  position: fixed;
+  top: -100px;
+  left: -100px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.item-action-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background-color: var(--surface);
+  color: var(--text-2);
+  cursor: grab;
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    color 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.item-action-tile:hover {
+  background-color: var(--surface-2);
+  color: var(--text);
+}
+
+.item-action-tile:active {
+  cursor: grabbing;
+  box-shadow: var(--whisper);
+}
+
+.item-action-tile.hidden {
+  opacity: 0.45;
+  border-style: dashed;
+}
