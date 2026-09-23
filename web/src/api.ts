@@ -95,10 +95,12 @@ export const api = {
     request<{ groups: DuplicateGroup[] }>(`/api/clipboards/${clipboardId}/duplicates`),
   listPlugins: () => request<{ plugins: Plugin[] }>('/api/plugins'),
   createPlugin: (data: {
+    id: string;
     name: string;
     author: string;
     version: string;
     description: string;
+    github_url?: string | null;
     code: string;
   }) =>
     request<{ plugin: Plugin }>('/api/plugins', {
@@ -106,12 +108,13 @@ export const api = {
       body: JSON.stringify(data),
     }),
   updatePlugin: (
-    id: number,
+    id: string,
     data: {
       name?: string;
       author?: string;
       version?: string;
       description?: string;
+      github_url?: string | null;
       code?: string;
       enabled?: boolean;
     },
@@ -120,6 +123,6 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify(data),
     }),
-  deletePlugin: (id: number) =>
+  deletePlugin: (id: string) =>
     request<void>(`/api/plugins/${id}`, { method: 'DELETE' }),
 };

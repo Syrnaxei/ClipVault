@@ -31,11 +31,12 @@ export interface ClipboardItem {
 }
 
 export interface Plugin {
-  id: number;
+  id: string;
   name: string;
   author: string;
   version: string;
   description: string;
+  github_url: string | null;
   code: string;
   enabled: boolean;
   created_at: string;

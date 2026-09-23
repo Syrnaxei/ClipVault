@@ -63,18 +63,74 @@ if (!itemColumns.includes('device_type')) {
   db.exec('ALTER TABLE clipboard_items ADD COLUMN device_type TEXT');
 }
 
+const existingPluginColumns = (
+  db.pragma('table_info(plugins)') as { name: string }[]
+).map((col) => col.name);
+if (existingPluginColumns.length > 0 && !existingPluginColumns.includes('slug')) {
+  db.exec('ALTER TABLE plugins RENAME TO plugins_legacy');
+}
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS plugins (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    name        TEXT    NOT NULL UNIQUE,
+    slug        TEXT    PRIMARY KEY,
+    name        TEXT    NOT NULL,
     author      TEXT    NOT NULL,
     version     TEXT    NOT NULL,
     description TEXT    NOT NULL,
+    github_url  TEXT,
     code        TEXT    NOT NULL,
     enabled     INTEGER NOT NULL DEFAULT 0,
     created_at  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
   );
 `);
+
+const legacyPluginColumns = (
+  db.pragma('table_info(plugins_legacy)') as { name: string }[]
+).map((col) => col.name);
+
+if (legacyPluginColumns.length > 0) {
+  const legacyRows = db
+    .prepare(
+      'SELECT name, author, version, description, code, enabled, created_at FROM plugins_legacy',
+    )
+    .all() as {
+    name: string;
+    author: string;
+    version: string;
+    description: string;
+    code: string;
+    enabled: number;
+    created_at: string;
+  }[];
+  const insert = db.prepare(
+    `INSERT INTO plugins (slug, name, author, version, description, github_url, code, enabled, created_at)
+     VALUES (?, ?, ?, ?, ?, NULL, ?, ?, ?)`,
+  );
+  const used = new Set<string>();
+  for (const row of legacyRows) {
+    let base = row.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 64);
+    if (!base) base = 'plugin';
+    let slug = base;
+    let n = 2;
+    while (used.has(slug)) slug = `${base}-${n++}`;
+    used.add(slug);
+    insert.run(
+      slug,
+      row.name,
+      row.author,
+      row.version,
+      row.description,
+      row.code,
+      row.enabled,
+      row.created_at,
+    );
+  }
+  db.exec('DROP TABLE plugins_legacy');
+}
 
 if (!itemColumns.includes('original_content')) {
   db.exec('ALTER TABLE clipboard_items ADD COLUMN original_content TEXT');

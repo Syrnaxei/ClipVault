@@ -27,3 +27,4 @@ Thumbs.db
 
 # preview prototype (superseded by web/, contains its own nested .git)
 Preview/
+extensions/

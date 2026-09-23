@@ -100,11 +100,12 @@ CREATE TABLE clipboard_items (
 );
 
 CREATE TABLE plugins (
-  id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  name        TEXT    NOT NULL UNIQUE, -- 插件名，重名导入视为更新
+  slug        TEXT    PRIMARY KEY,     -- 插件唯一标识（.CVT 元数据 id，slug 格式），相同 id 导入即更新
+  name        TEXT    NOT NULL,        -- 展示名，允许重名
   author      TEXT    NOT NULL,
   version     TEXT    NOT NULL,        -- x.y.z
   description TEXT    NOT NULL,
+  github_url  TEXT,                    -- 作者 GitHub 主页（可空），用于头像与跳转链接
   code        TEXT    NOT NULL,        -- 插件 JS 代码（process(input) 函数）
   enabled     INTEGER NOT NULL DEFAULT 0, -- 单选启用：同一时间至多一个为 1
   created_at  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
@@ -163,14 +164,14 @@ CREATE INDEX idx_items_hash ON clipboard_items(clipboard_id, content_hash);
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | `/api/plugins` | 列出全部插件（含代码，全设备共享） |
-| POST | `/api/plugins` | 导入插件，body: `{ "name", "author", "version", "description", "code", "enabled"? }`；同名即更新（upsert）；`enabled: true` 时自动禁用其他插件，默认未启用 |
-| PATCH | `/api/plugins/:id` | 更新插件（至少一项字段）；`enabled: true` 为单选启用（服务端先清零其他），`enabled: false` 取消启用 |
-| DELETE | `/api/plugins/:id` | 删除插件（条目的 `original_content` 备份不受影响） |
+| GET | `/api/plugins` | 列出全部插件（含代码，全设备共享；`id` 即 slug） |
+| POST | `/api/plugins` | 导入插件，body: `{ "id", "name", "author", "version", "description", "github_url"?, "code", "enabled"? }`；`id` 相同即更新（upsert），允许重名；`enabled: true` 时自动禁用其他插件，默认未启用 |
+| PATCH | `/api/plugins/:id` | 按 slug 更新插件（至少一项字段，`github_url` 传 `null` 清除）；`enabled: true` 为单选启用（服务端先清零其他），`enabled: false` 取消启用 |
+| DELETE | `/api/plugins/:id` | 按 slug 删除插件（条目的 `original_content` 备份不受影响） |
 
 ### 5.3 插件系统
 
-- 插件为全局通用的文本处理黑盒（`.CVT` 文件，格式见 `docs/PLUGINS.md`）：入口为条目文本，出口为处理后文本，`process(input)` 纯函数。
+- 插件为全局通用的文本处理黑盒（`.CVT` 文件，格式见 `docs/PLUGINS.md`）：入口为条目文本，出口为处理后文本，`process(input)` 纯函数。元数据 `id`（slug）为唯一标识，重导入即更新；`github_url` 可选，填写后详情页显示 GitHub 头像与主页链接（前端直连加载，失败回退文字头像）。
 - 前端 Web Worker 沙箱执行（无 DOM/网络访问，3 秒超时强杀）；异常/超时不覆盖原条目。
 - **单选启用**：同一时间至多一个插件启用；主界面条目悬停显示插件按钮，点击弹「原文 / 处理结果」双栏预览确认，确认后覆盖并把原文写入 `original_content`，toast 提供单步撤销。
 

@@ -229,6 +229,23 @@
   flex-shrink: 0;
 }
 
+.plugins-avatar-img {
+  object-fit: cover;
+  background-color: var(--surface-2);
+}
+
+.plugins-github-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  transition: color 0.15s ease;
+}
+
+.plugins-github-link:hover {
+  color: var(--text);
+}
+
 .plugins-author-name {
   font-size: 14px;
   font-weight: 500;

@@ -9,10 +9,32 @@ interface PluginsViewProps {
   onBack: () => void;
 }
 
+function PluginAvatar({ plugin }: { plugin: Plugin }) {
+  const [failed, setFailed] = useState(false);
+  const githubUser = plugin.github_url?.split('/').pop() ?? null;
+  if (githubUser && !failed) {
+    return (
+      <img
+        className="plugins-avatar plugins-avatar-img"
+        src={`https://github.com/${githubUser}.png?size=80`}
+        alt={plugin.author}
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+  return <span className="plugins-avatar">{plugin.author.slice(0, 1)}</span>;
+}
+
+const GITHUB_MARK = (
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+  </svg>
+);
+
 function PluginsView({ onBack }: PluginsViewProps) {
   const [plugins, setPlugins] = useState<Plugin[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -28,7 +50,7 @@ function PluginsView({ onBack }: PluginsViewProps) {
       .finally(() => setLoaded(true));
   }, []);
 
-  const reload = async (preferId?: number) => {
+  const reload = async (preferId?: string) => {
     const { plugins: list } = await api.listPlugins();
     setPlugins(list);
     setSelectedId((cur) => {
@@ -175,8 +197,20 @@ function PluginsView({ onBack }: PluginsViewProps) {
                     <div>
                       <h2 className="plugins-detail-title">{selected.name}</h2>
                       <div className="plugins-author-line">
-                        <span className="plugins-avatar">{selected.author.slice(0, 1)}</span>
+                        <PluginAvatar key={selected.id} plugin={selected} />
                         <span className="plugins-author-name">{selected.author}</span>
+                        {selected.github_url && (
+                          <a
+                            className="plugins-github-link"
+                            href={selected.github_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            title="GitHub 主页"
+                            aria-label={`查看 ${selected.author} 的 GitHub 主页`}
+                          >
+                            {GITHUB_MARK}
+                          </a>
+                        )}
                         <span className="plugins-version">v{selected.version}</span>
                       </div>
                     </div>
