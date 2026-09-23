@@ -12,6 +12,15 @@
   box-shadow: var(--whisper);
 }
 
+.clipboard-item-content:has(.popconfirm-popover) {
+  border-color: var(--border-strong);
+  box-shadow: var(--whisper);
+}
+
+.clipboard-item-content:has(.popconfirm-popover) .action-buttons {
+  opacity: 1;
+}
+
 .view-mode {
   display: flex;
   align-items: center;
