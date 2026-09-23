@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { ClipboardItem } from '../types';
 import { DEVICE_TYPES } from '../types';
 import PopConfirm from './PopConfirm';
@@ -74,6 +74,22 @@ function ClipboardItem({
 }: ClipboardItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(item.content);
+  const editInputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const el = editInputRef.current;
+    if (!el) return;
+    const prev = el.style.height;
+    const prevPx = parseFloat(prev);
+    el.style.transition = 'none';
+    el.style.height = 'auto';
+    const target = Math.min(el.scrollHeight + 2, 320);
+    el.style.height = prev;
+    void el.offsetHeight;
+    el.style.transition = '';
+    if (target === prevPx) return;
+    el.style.height = `${target}px`;
+  }, [editContent, isEditing]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -95,6 +111,7 @@ function ClipboardItem({
       {isEditing ? (
         <div className="edit-mode">
           <textarea
+            ref={editInputRef}
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
             onKeyDown={(e) => {
@@ -105,7 +122,7 @@ function ClipboardItem({
               if (e.key === 'Escape') handleCancel();
             }}
             className="edit-input"
-            rows={3}
+            rows={1}
             autoFocus
           />
           <div className="edit-actions">

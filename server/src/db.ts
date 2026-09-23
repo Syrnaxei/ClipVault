@@ -136,4 +136,32 @@ if (!itemColumns.includes('original_content')) {
   db.exec('ALTER TABLE clipboard_items ADD COLUMN original_content TEXT');
 }
 
+// 历史遗留：早期版本加过 plugin_id 列（外键指向 plugins）。重命名迁移会让该外键
+// 指向已删除的 plugins_legacy，导致条目插入报 SQLITE_ERROR，需重建表移除该列。
+const currentItemColumns = (
+  db.pragma('table_info(clipboard_items)') as { name: string }[]
+).map((col) => col.name);
+if (currentItemColumns.includes('plugin_id')) {
+  db.exec(`
+    CREATE TABLE clipboard_items_rebuilt (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      clipboard_id INTEGER NOT NULL REFERENCES clipboards(id) ON DELETE CASCADE,
+      content      TEXT    NOT NULL,
+      content_hash TEXT    NOT NULL,
+      original_content TEXT,
+      device       TEXT,
+      device_type  TEXT,
+      created_at   TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+    );
+    INSERT INTO clipboard_items_rebuilt
+      (id, clipboard_id, content, content_hash, original_content, device, device_type, created_at)
+      SELECT id, clipboard_id, content, content_hash, original_content, device, device_type, created_at
+      FROM clipboard_items;
+    DROP TABLE clipboard_items;
+    ALTER TABLE clipboard_items_rebuilt RENAME TO clipboard_items;
+    CREATE INDEX IF NOT EXISTS idx_items_clipboard_time ON clipboard_items(clipboard_id, created_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_items_hash ON clipboard_items(clipboard_id, content_hash);
+  `);
+}
+
 export default db;

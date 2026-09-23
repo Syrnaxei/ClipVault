@@ -135,12 +135,19 @@
   font-family: inherit;
   line-height: 1.5;
   width: 100%;
-  min-height: 68px;
+  min-height: 46px;
+  max-height: 320px;
   box-sizing: border-box;
   background-color: var(--bg);
   color: var(--text);
-  resize: vertical;
-  transition: border-color 0.15s ease;
+  overflow-y: auto;
+  resize: none;
+  scrollbar-width: none;
+  transition: height 0.15s ease, border-color 0.15s ease;
+}
+
+.edit-input::-webkit-scrollbar {
+  display: none;
 }
 
 .edit-input:focus {

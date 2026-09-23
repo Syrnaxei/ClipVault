@@ -47,6 +47,7 @@ function ClipboardList({
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [pluginTarget, setPluginTarget] = useState<ClipboardItem | null>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
+  const addItemInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -69,6 +70,26 @@ function ClipboardList({
     setMenuOpen(false);
     setEditModalOpen(false);
   }, [clipboard?.id]);
+
+  useEffect(() => {
+    const el = addItemInputRef.current;
+    if (!el) return;
+    const prev = el.style.height;
+    const prevPx = parseFloat(prev);
+    if (expanded) {
+      if (prevPx === 176) return;
+      el.style.height = '176px';
+      return;
+    }
+    el.style.transition = 'none';
+    el.style.height = 'auto';
+    const target = Math.min(el.scrollHeight + 2, 176);
+    el.style.height = prev;
+    void el.offsetHeight;
+    el.style.transition = '';
+    if (target === prevPx) return;
+    el.style.height = `${target}px`;
+  }, [newContent, expanded]);
 
   const submitNewItem = () => {
     const content = newContent.trim();
@@ -190,6 +211,7 @@ function ClipboardList({
       <div className="list-footer">
         <div className="add-item-box">
           <textarea
+            ref={addItemInputRef}
             className={`add-item-input ${expanded ? 'expanded' : ''}`}
             placeholder={clipboard !== null ? '输入要添加的内容，Enter 添加，Shift+Enter 换行' : '请先选择剪切板'}
             rows={1}

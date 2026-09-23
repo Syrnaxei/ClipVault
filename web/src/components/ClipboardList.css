@@ -150,7 +150,8 @@
   display: block;
   width: 100%;
   box-sizing: border-box;
-  height: 46px;
+  min-height: 46px;
+  max-height: 176px;
   padding: 11px 44px 11px 16px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-btn);
@@ -159,14 +160,17 @@
   line-height: 1.5;
   background-color: var(--surface);
   color: var(--text);
-  overflow: hidden;
+  overflow-y: auto;
   resize: none;
+  scrollbar-width: none;
   transition: height 0.25s ease, border-color 0.15s ease;
 }
 
+.add-item-input::-webkit-scrollbar {
+  display: none;
+}
+
 .add-item-input.expanded {
-  height: 176px;
-  overflow-y: auto;
   padding-right: 16px;
 }
 
