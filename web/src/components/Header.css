@@ -64,6 +64,14 @@
   color: var(--accent);
 }
 
+.logo-icon-badge {
+  fill: var(--text);
+}
+
+.logo-icon-dot {
+  fill: var(--bg);
+}
+
 .logo-text {
   font-size: 18px;
   font-weight: 600;
