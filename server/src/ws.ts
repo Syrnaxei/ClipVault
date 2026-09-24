@@ -29,6 +29,7 @@ export function initWs(server: Server): void {
       return;
     }
     wss.handleUpgrade(req, socket, head, (ws) => {
+      ws.on('pong', () => alive.add(ws));
       alive.add(ws);
       wss.emit('connection', ws, req);
     });
